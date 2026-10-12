@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orders — BizLink</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-role="business">
+  <script src="js/icons.js"></script>
+  <main class="app-shell">
+    <div class="phone-frame">
+      <div class="phone-statusbar">
+        <span>9:41</span>
+        <span class="notch"></span>
+        <span class="status-icons"><span>▂▄▆</span><span class="battery"></span></span>
+      </div>
+
+      <div class="screen">
+        <div class="screen-root bz-screen">
+          <div class="bz-scroll">
+            <div class="pf-head">
+              <h1>Orders</h1>
+              <span class="od-pill placed hidden" id="bo-new-pill"></span>
+            </div>
+
+            <div class="od-tabs four" role="tablist" aria-label="Order stage">
+              <button type="button" role="tab" class="od-tab active" data-tab="new" aria-selected="true">New <span></span></button>
+              <button type="button" role="tab" class="od-tab" data-tab="preparing" aria-selected="false">Preparing <span></span></button>
+              <button type="button" role="tab" class="od-tab" data-tab="ready" aria-selected="false">Ready <span></span></button>
+              <button type="button" role="tab" class="od-tab" data-tab="done" aria-selected="false">Completed <span></span></button>
+            </div>
+
+            <div class="od-list" id="bo-list"></div>
+            <div id="bo-empty" class="od-empty hidden">
+              <div class="od-empty-ic"><svg class="ic"><use href="#i-orders"/></svg></div>
+              <b id="bo-empty-title">No orders</b>
+              <p id="bo-empty-text"></p>
+            </div>
+          </div>
+          <nav class="bottom-nav" aria-label="Main" data-role-nav data-active="orders"></nav>
+        </div>
+        <div id="toast" class="bz-toast hidden" role="status"></div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/products-store.js"></script>
+  <script src="js/orders-store.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/biz-ui.js"></script>
+  <script src="js/business-orders.js"></script>
+</body>
+</html>

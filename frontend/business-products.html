@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Products — BizLink</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-role="business">
+  <script src="js/icons.js"></script>
+  <main class="app-shell">
+    <div class="phone-frame">
+      <div class="phone-statusbar">
+        <span>9:41</span>
+        <span class="notch"></span>
+        <span class="status-icons"><span>▂▄▆</span><span class="battery"></span></span>
+      </div>
+
+      <div class="screen">
+        <div class="screen-root bz-screen">
+          <div class="bz-scroll">
+            <div class="pf-head">
+              <h1>Products</h1>
+              <button type="button" class="bz-btn primary bp-head-btn" id="bp-add"><svg class="ic"><use href="#i-plus"/></svg>Add product</button>
+            </div>
+            <div class="bp-count" id="bp-count"></div>
+            <div class="bz-chips bp-chips" id="bp-chips" role="tablist" aria-label="Filter products">
+              <button type="button" class="bz-chip active" data-f="all">All</button>
+              <button type="button" class="bz-chip" data-f="low">Low stock</button>
+              <button type="button" class="bz-chip" data-f="out">Out of stock</button>
+            </div>
+            <div id="bp-list"></div>
+            <div id="bp-empty" class="bz-empty hidden"></div>
+          </div>
+          <nav class="bottom-nav" aria-label="Main" data-role-nav data-active="products"></nav>
+        </div>
+        <div id="toast" class="bz-toast hidden" role="status"></div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/products-store.js"></script>
+  <script src="js/orders-store.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/biz-ui.js"></script>
+  <script src="js/business-products.js"></script>
+</body>
+</html>

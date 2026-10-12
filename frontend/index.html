@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BizLink — Township Business &amp; Delivery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <div class="phone-frame">
+      <div class="phone-statusbar">
+        <span>9:41</span>
+        <span class="notch"></span>
+        <span class="status-icons"><span>▂▄▆</span><span class="battery"></span></span>
+      </div>
+
+      <div class="screen">
+        <div class="screen-root bg-white">
+          <!-- Top bar -->
+          <header class="home-header">
+            <a href="index.html" class="home-logo" aria-label="BizLink home">
+              <span class="biz">Biz</span><span class="link">Link</span>
+            </a>
+            <button
+              type="button"
+              class="home-menu-btn"
+              id="home-menu-btn"
+              aria-label="Open menu"
+              aria-expanded="false"
+              aria-controls="home-nav-panel"
+            >
+              <span class="bars" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </span>
+            </button>
+          </header>
+
+          <!-- Working nav (was a dead hamburger) -->
+          <nav id="home-nav-panel" class="home-nav-panel" hidden>
+            <a href="signup.html">
+              <span class="nav-icon" aria-hidden="true">✨</span>
+              Get Started
+            </a>
+            <a href="signin.html">
+              <span class="nav-icon" aria-hidden="true">🔑</span>
+              Log In
+            </a>
+            <div class="nav-divider" role="separator"></div>
+            <a href="#about">
+              <span class="nav-icon" aria-hidden="true">ℹ️</span>
+              About
+            </a>
+            <a href="#contact">
+              <span class="nav-icon" aria-hidden="true">✉️</span>
+              Contact
+            </a>
+            <a href="#help">
+              <span class="nav-icon" aria-hidden="true">❓</span>
+              Help
+            </a>
+          </nav>
+
+          <div class="home-body">
+            <section class="home-hero" aria-labelledby="home-heading">
+              <p class="home-eyebrow">Local business. Better connected.</p>
+              <h1 id="home-heading" class="home-title">
+                Your business,<br />
+                <span class="accent-navy">connected</span><span class="accent-amber">.</span>
+              </h1>
+              <p class="home-lead">
+                Find suppliers, reach customers and move products through one business network built for townships.
+              </p>
+              <div class="home-cta">
+                <a href="signup.html" class="btn-primary">
+                  <span>Get Started</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+                <a href="signin.html" class="btn-secondary">Log In</a>
+              </div>
+            </section>
+
+            <figure class="home-hero-card">
+              <img
+                src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&amp;fit=crop&amp;w=1200&amp;q=80"
+                alt="Township market and local delivery"
+                width="800"
+                height="360"
+              />
+              <div class="scrim" aria-hidden="true"></div>
+              <figcaption class="home-chip top-left">Stronger businesses, brighter communities</figcaption>
+              <span class="home-chip bottom-right">Delivery-ready network</span>
+            </figure>
+
+            <section class="home-stats" aria-label="BizLink at a glance">
+              <div class="home-stat">
+                <div class="num">2.4k+</div>
+                <div class="label">Local sellers</div>
+              </div>
+              <div class="home-stat">
+                <div class="num">18k+</div>
+                <div class="label">Orders moved</div>
+              </div>
+              <div class="home-stat">
+                <div class="num">96%</div>
+                <div class="label">On-time rate</div>
+              </div>
+            </section>
+
+            <!-- Anchor targets for footer / menu links -->
+            <section id="about" class="home-section" style="scroll-margin-top:72px">
+              <h2 class="font-display" style="font-size:1rem;font-weight:800;color:var(--slate-900);margin-bottom:6px">About BizLink</h2>
+              <p class="home-lead" style="margin:0">
+                BizLink connects township businesses, customers and delivery partners in one place — so stock moves faster and communities grow stronger.
+              </p>
+            </section>
+
+            <section id="contact" class="home-section" style="scroll-margin-top:72px">
+              <h2 class="font-display" style="font-size:1rem;font-weight:800;color:var(--slate-900);margin-bottom:6px">Contact</h2>
+              <p class="home-lead" style="margin:0">
+                Questions? Email <a href="mailto:support@bizlink.app" style="color:var(--navy);font-weight:600">support@bizlink.app</a>
+                or use the help centre after you sign in.
+              </p>
+            </section>
+
+            <section id="help" class="home-section" style="scroll-margin-top:72px;padding-bottom:8px">
+              <h2 class="font-display" style="font-size:1rem;font-weight:800;color:var(--slate-900);margin-bottom:6px">Help</h2>
+              <p class="home-lead" style="margin:0">
+                Create an account to shop, sell or deliver. Forgot your password? Use
+                <a href="forgot-password.html" style="color:var(--navy);font-weight:600">reset password</a>.
+              </p>
+            </section>
+          </div>
+
+          <footer class="home-footer">
+            <div class="home-footer-top">
+              <a href="index.html" class="home-footer-brand">BizLink</a>
+              <nav class="home-footer-nav" aria-label="Footer">
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+                <a href="#help">Help</a>
+                <a href="signup.html">Sign up</a>
+                <a href="signin.html">Log in</a>
+              </nav>
+            </div>
+            <p class="home-footer-copy">© BizLink · Built for local business</p>
+          </footer>
+        </div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

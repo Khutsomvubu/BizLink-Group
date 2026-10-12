@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in — BizLink</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <div class="phone-frame">
+      <div class="phone-statusbar">
+        <span>9:41</span>
+        <span class="notch"></span>
+        <span class="status-icons"><span>▂▄▆</span><span class="battery"></span></span>
+      </div>
+
+      <div class="screen">
+        <div class="screen-root bg-white relative pb-8">
+          <div class="absolute -top-12 -right-12 w-48 h-48 bg-[#002B66] rounded-full z-0"></div>
+          <div class="absolute top-12 -right-6 w-28 h-28 bg-amber-400 rounded-full z-0"></div>
+
+          <div class="relative z-10 px-6 pt-12">
+            <a href="index.html" class="p-2 -ml-2 text-slate-700 hover:bg-slate-100 rounded-full w-fit mb-6 inline-flex" style="text-decoration:none" aria-label="Back">←</a>
+
+            <div class="mb-6 font-black text-2xl tracking-tight">
+              <span style="color:#f59e0b">Biz</span><span style="color:#002B66">Link</span>
+              <div class="text-[10px] font-bold tracking-widest text-slate-400 mt-1">CONNECT · GROW · MOVE TOGETHER</div>
+            </div>
+
+            <div class="mt-4 mb-6">
+              <h1 class="text-2xl font-black text-slate-900">Welcome back</h1>
+              <p class="text-slate-500 text-sm mt-1">Sign in to your BizLink account</p>
+            </div>
+
+            <div id="signin-toast" class="hidden text-xs rounded-xl px-3 py-2 mb-3" role="status"></div>
+
+            <form id="signin-form" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5" for="signin-email">Email address</label>
+                <input id="signin-email" type="email" required autocomplete="email"
+                  value="you@example.com"
+                  class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5" for="signin-password">Password</label>
+                <div class="relative">
+                  <input id="signin-password" type="password" required autocomplete="current-password"
+                    value="password123"
+                    class="w-full py-3 pl-4 pr-11 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+                  <button type="button" id="toggle-pw" class="absolute right-3 top-3 text-xs font-bold text-slate-500">Show</button>
+                </div>
+              </div>
+              <div class="text-right">
+                <a href="forgot-password.html" class="text-xs font-semibold text-blue-600 hover:underline">Forgot password?</a>
+              </div>
+              <button type="submit" id="signin-btn" class="w-full bg-[#002B66] text-white font-bold py-3.5 px-4 rounded-xl shadow-md hover:bg-[#001d47] transition mt-2">
+                Sign In →
+              </button>
+            </form>
+
+            <div class="mt-6 text-center pb-8">
+              <p class="text-xs text-slate-500">Don’t have an account?
+                <a href="signup.html" class="font-bold text-blue-600 hover:underline ml-1">Sign up</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/signin.js"></script>
+</body>
+</html>

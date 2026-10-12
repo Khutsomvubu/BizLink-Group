@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse — BizLink</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <script src="js/icons.js"></script>
+  <main class="app-shell">
+    <div class="phone-frame">
+      <div class="phone-statusbar">
+        <span>9:41</span>
+        <span class="notch"></span>
+        <span class="status-icons"><span>▂▄▆</span><span class="battery"></span></span>
+      </div>
+
+      <div class="screen">
+        <div class="screen-root bz-screen">
+          <div class="bz-scroll">
+            <!-- Header -->
+            <header class="bz-head">
+              <div>
+                <div class="bz-logo"><span class="biz">Biz</span><span class="link">Link</span></div>
+                <div class="bz-tagline">Local business. Connected.</div>
+              </div>
+              <div class="bz-head-actions">
+                <button type="button" id="bell-btn" class="bz-iconbtn" aria-label="Notifications">
+                  <svg class="ic"><use href="#i-bell"/></svg><span class="bz-dot" id="bell-dot"></span>
+                </button>
+                <button type="button" id="header-cart" class="bz-iconbtn" aria-label="Open cart">
+                  <svg class="ic"><use href="#i-cart"/></svg><span class="bz-badge hidden" data-cart-badge>0</span>
+                </button>
+              </div>
+            </header>
+
+            <!-- Search -->
+            <div class="bz-search">
+              <svg class="ic"><use href="#i-search"/></svg>
+              <input id="search-input" type="search" placeholder="Search products or suppliers…" aria-label="Search products or suppliers" />
+            </div>
+
+            <!-- Categories -->
+            <div class="bz-chips" id="category-bar" role="tablist" aria-label="Categories">
+              <button type="button" class="bz-chip cat-btn active" data-cat="All">All</button>
+              <button type="button" class="bz-chip cat-btn" data-cat="Groceries">Groceries</button>
+              <button type="button" class="bz-chip cat-btn" data-cat="Drinks">Drinks</button>
+              <button type="button" class="bz-chip cat-btn" data-cat="Household">Household</button>
+              <button type="button" class="bz-chip cat-btn" data-cat="Personal Care">Personal Care</button>
+              <button type="button" class="bz-chip cat-btn" data-cat="Stationery">Stationery</button>
+            </div>
+            <div class="bz-divider"></div>
+
+            <!-- Banner -->
+            <section class="bz-banner">
+              <div>
+                <h2>Shop local.<span>Grow local.</span></h2>
+                <p>Quality products. Stronger communities.</p>
+              </div>
+              <div class="bz-banner-img"><svg viewBox="0 0 80 80" aria-hidden="true"><rect width="80" height="80" fill="#2b2a24"/>
+<rect y="26" width="80" height="3" fill="#6b5b3e"/><rect y="52" width="80" height="3" fill="#6b5b3e"/>
+<g><circle cx="10" cy="18" r="6" fill="#dc2626"/><circle cx="23" cy="18" r="6" fill="#ef4444"/><circle cx="36" cy="18" r="6" fill="#f59e0b"/><circle cx="49" cy="18" r="6" fill="#84cc16"/><circle cx="62" cy="18" r="6" fill="#dc2626"/><circle cx="73" cy="18" r="6" fill="#facc15"/>
+<circle cx="10" cy="44" r="6" fill="#16a34a"/><circle cx="23" cy="44" r="6" fill="#65a30d"/><circle cx="36" cy="44" r="6" fill="#ea580c"/><circle cx="49" cy="44" r="6" fill="#dc2626"/><circle cx="62" cy="44" r="6" fill="#a3e635"/><circle cx="73" cy="44" r="6" fill="#f97316"/>
+<circle cx="10" cy="70" r="6" fill="#ea580c"/><circle cx="23" cy="70" r="6" fill="#facc15"/><circle cx="36" cy="70" r="6" fill="#16a34a"/><circle cx="49" cy="70" r="6" fill="#ef4444"/><circle cx="62" cy="70" r="6" fill="#d97706"/><circle cx="73" cy="70" r="6" fill="#84cc16"/></g></svg></div>
+            </section>
+
+            <!-- Browse row -->
+            <div class="bz-row">
+              <h2>Browse products</h2>
+              <div class="bz-tools">
+                <button type="button" id="filter-btn" class="bz-textbtn"><svg class="ic"><use href="#i-filter"/></svg>Filter</button>
+                <span class="bz-tools-sep"></span>
+                <button type="button" id="sort-btn" class="bz-textbtn"><svg class="ic"><use href="#i-sort"/></svg>Sort</button>
+              </div>
+            </div>
+
+            <!-- Products: markup in HTML; JS only filters, sorts and manages the cart -->
+            <div id="product-grid" class="bz-grid">
+            <!-- cards are rendered by js/browse.js from the shared product list -->
+            
+            </div>
+
+            <div id="empty-state" class="bz-empty hidden">
+              <b>No products found</b>
+              Try a different search or clear your filters.
+              <div><button type="button" id="clear-filters" class="bz-link">Clear filters</button></div>
+            </div>
+          </div>
+
+          <nav class="bottom-nav" aria-label="Main">
+            <a href="browse.html" class="nav-item"><span class="nav-ic"><svg class="ic"><use href="#i-home"/></svg></span><span class="nav-lbl">Home</span></a>
+            <a href="browse.html" class="nav-item active"><span class="nav-ic"><svg class="ic"><use href="#i-search"/></svg></span><span class="nav-lbl">Browse</span></a>
+            <a href="orders.html" class="nav-item"><span class="nav-ic"><svg class="ic"><use href="#i-orders"/></svg><span class="nav-badge hidden" data-orders-badge>0</span></span><span class="nav-lbl">Orders</span></a>
+            <a href="browse.html#cart" class="nav-item" id="nav-cart"><span class="nav-ic"><svg class="ic"><use href="#i-cart"/></svg><span class="nav-badge hidden" data-cart-badge>0</span></span><span class="nav-lbl">Cart</span></a>
+            <a href="profile.html" class="nav-item"><span class="nav-ic"><svg class="ic"><use href="#i-user"/></svg></span><span class="nav-lbl">Profile</span></a>
+          </nav>
+        </div>
+
+        <!-- Filter sheet -->
+        <div id="filter-sheet" class="bz-sheet-wrap hidden" role="dialog" aria-modal="true" aria-label="Filter products">
+          <div class="bz-sheet">
+            <div class="bz-sheet-grab"></div>
+            <div class="bz-sheet-head"><h2>Filter</h2><button type="button" class="bz-iconbtn" data-close="filter-sheet" aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button></div>
+            <label class="bz-switch"><span>In stock only</span><input type="checkbox" id="f-stock" /></label>
+            <h3>Minimum rating</h3>
+            <div class="bz-opts" id="f-rating">
+              <button type="button" class="bz-opt active" data-v="0">Any</button>
+              <button type="button" class="bz-opt" data-v="4">4.0+</button>
+              <button type="button" class="bz-opt" data-v="4.5">4.5+</button>
+            </div>
+            <h3>Price</h3>
+            <div class="bz-opts" id="f-price">
+              <button type="button" class="bz-opt active" data-v="0">Any</button>
+              <button type="button" class="bz-opt" data-v="30">Under R30</button>
+              <button type="button" class="bz-opt" data-v="60">Under R60</button>
+              <button type="button" class="bz-opt" data-v="100">Under R100</button>
+            </div>
+            <div class="bz-sheet-actions">
+              <button type="button" class="bz-btn ghost" id="f-reset">Reset</button>
+              <button type="button" class="bz-btn primary" id="f-apply">Show results</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sort sheet -->
+        <div id="sort-sheet" class="bz-sheet-wrap hidden" role="dialog" aria-modal="true" aria-label="Sort products">
+          <div class="bz-sheet">
+            <div class="bz-sheet-grab"></div>
+            <div class="bz-sheet-head"><h2>Sort by</h2><button type="button" class="bz-iconbtn" data-close="sort-sheet" aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button></div>
+            <div class="bz-sort-list" id="sort-list">
+              <button type="button" data-sort="recommended" class="active">Recommended<svg class="ic"><use href="#i-check"/></svg></button>
+              <button type="button" data-sort="price-asc">Price: low to high<svg class="ic"><use href="#i-check"/></svg></button>
+              <button type="button" data-sort="price-desc">Price: high to low<svg class="ic"><use href="#i-check"/></svg></button>
+              <button type="button" data-sort="rating">Top rated<svg class="ic"><use href="#i-check"/></svg></button>
+              <button type="button" data-sort="name">Name: A to Z<svg class="ic"><use href="#i-check"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cart sheet (JS fills the list) -->
+        <div id="cart-panel" class="bz-sheet-wrap hidden" role="dialog" aria-modal="true" aria-label="Your cart">
+          <div class="bz-sheet">
+            <div class="bz-sheet-grab"></div>
+            <div class="bz-sheet-head"><h2>Your cart</h2><button type="button" id="cart-close" class="bz-iconbtn" aria-label="Close cart"><svg class="ic"><use href="#i-close"/></svg></button></div>
+            <div id="cart-list"></div>
+            <div id="cart-footer">
+              <div class="bz-cart-total"><span>Total</span><span id="cart-total">R0.00</span></div>
+              <div class="bz-deliver"><svg class="ic"><use href="#i-pin"/></svg><div id="deliver-to"></div></div>
+              <div class="bz-sheet-actions"><button type="button" id="checkout-btn" class="bz-btn primary">Checkout</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="toast" class="bz-toast hidden" role="status"></div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/products-store.js"></script>
+  <script src="js/orders-store.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/browse.js"></script>
+</body>
+</html>

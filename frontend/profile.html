@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile — BizLink</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <script src="js/icons.js"></script>
+  <main class="app-shell">
+    <div class="phone-frame">
+      <div class="phone-statusbar">
+        <span>9:41</span>
+        <span class="notch"></span>
+        <span class="status-icons"><span>▂▄▆</span><span class="battery"></span></span>
+      </div>
+
+      <div class="screen">
+        <div class="screen-root bz-screen">
+          <div class="bz-scroll">
+            <div class="pf-head">
+              <h1>Profile</h1>
+              <a href="browse.html#cart" class="bz-iconbtn" id="head-cart" data-role-only="customer" aria-label="Open cart"><svg class="ic"><use href="#i-cart"/></svg><span class="bz-badge hidden" data-cart-badge>0</span></a>
+            </div>
+
+            <section class="pf-hero">
+              <div id="profile-avatar" class="pf-avatar" aria-hidden="true">?</div>
+              <h2 id="profile-name" class="pf-name">—</h2>
+              <span id="profile-type" class="pf-type">Customer</span>
+            </section>
+
+            <!-- Details from sign-up -->
+            <section class="pf-card" aria-labelledby="details-title">
+              <div class="pf-card-head">
+                <h2 id="details-title">Your details</h2>
+                <button type="button" id="edit-btn" class="bz-link"><span>Edit</span></button>
+              </div>
+              <div id="details-view">
+            <div class="pf-item">
+              <svg class="ic"><use href="#i-user"/></svg>
+              <div><div class="l">Full name</div><div class="v" id="d-name">—</div></div>
+            </div>
+            <div class="pf-item">
+              <svg class="ic"><use href="#i-mail"/></svg>
+              <div><div class="l">Email</div><div class="v" id="d-email">—</div></div>
+            </div>
+            <div class="pf-item">
+              <svg class="ic"><use href="#i-phone"/></svg>
+              <div><div class="l">Phone number</div><div class="v" id="d-phone">—</div></div>
+            </div>
+            <div class="pf-item">
+              <svg class="ic"><use href="#i-pin"/></svg>
+              <div><div class="l">Address</div><div class="v" id="d-address">—</div></div>
+            </div>
+            <div class="pf-item hidden" data-role-only="business">
+              <svg class="ic"><use href="#i-box"/></svg>
+              <div><div class="l">Business name</div><div class="v" id="d-business">—</div></div>
+            </div>
+            <div class="pf-item hidden" data-role-only="delivery">
+              <svg class="ic"><use href="#i-bike"/></svg>
+              <div><div class="l">Vehicle</div><div class="v" id="d-vehicle">—</div></div>
+            </div>
+            <div class="pf-item hidden" data-role-only="delivery" id="d-plate-row">
+              <svg class="ic"><use href="#i-badge"/></svg>
+              <div><div class="l">Number plate</div><div class="v" id="d-plate">—</div></div>
+            </div>
+            <div class="pf-item">
+              <svg class="ic"><use href="#i-badge"/></svg>
+              <div><div class="l">Account type</div><div class="v" id="d-type">—</div></div>
+            </div>
+            <div class="pf-item">
+              <svg class="ic"><use href="#i-calendar"/></svg>
+              <div><div class="l">Member since</div><div class="v" id="d-since">—</div></div>
+            </div>
+              </div>
+
+              <form id="details-form" class="pf-form hidden" novalidate>
+                <label for="e-name">Full name</label>
+                <input id="e-name" type="text" autocomplete="name" />
+                <label for="e-phone">Phone number</label>
+                <input id="e-phone" type="tel" autocomplete="tel" placeholder="e.g. 082 123 4567" />
+                <div class="hidden" data-role-only="business">
+                  <label for="e-business">Business name</label>
+                  <input id="e-business" type="text" autocomplete="organization" />
+                </div>
+                <div class="hidden" data-role-only="delivery">
+                  <label for="e-vehicle">Vehicle type</label>
+                  <select id="e-vehicle">
+                    <option>Scooter</option><option>Motorbike</option><option>Car</option><option>Bakkie</option><option>Bicycle</option>
+                  </select>
+                  <label for="e-plate">Number plate</label>
+                  <input id="e-plate" type="text" autocapitalize="characters" placeholder="e.g. GP 48 21 TR" />
+                </div>
+                <label for="e-address" id="e-address-label">Address</label>
+                <input id="e-address" type="text" autocomplete="street-address" placeholder="Street, suburb or township, city" />
+                <p id="form-err" class="err hidden" role="alert"></p>
+                <div class="bz-sheet-actions">
+                  <button type="button" id="cancel-btn" class="bz-btn ghost">Cancel</button>
+                  <button type="submit" class="bz-btn primary">Save changes</button>
+                </div>
+              </form>
+            </section>
+
+            <div class="pf-links">
+              <a href="orders.html" class="pf-link hidden" data-role-only="customer"><svg class="ic"><use href="#i-orders"/></svg>My orders</a>
+              <a href="browse.html" class="pf-link hidden" data-role-only="customer"><svg class="ic"><use href="#i-search"/></svg>Continue shopping</a>
+              <a href="business.html" class="pf-link hidden" data-role-only="business"><svg class="ic"><use href="#i-home"/></svg>Back to dashboard</a>
+              <a href="driver.html" class="pf-link hidden" data-role-only="delivery"><svg class="ic"><use href="#i-bike"/></svg>Back to jobs</a>
+              <button type="button" id="signout-btn" class="pf-link danger"><svg class="ic"><use href="#i-logout"/></svg>Sign out</button>
+            </div>
+          </div>
+
+          <nav class="bottom-nav" aria-label="Main" data-role-nav data-active="profile"></nav>
+        </div>
+        <div id="toast" class="bz-toast hidden" role="status"></div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/products-store.js"></script>
+  <script src="js/orders-store.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create account — BizLink</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <div class="phone-frame">
+      <div class="phone-statusbar">
+        <span>9:41</span>
+        <span class="notch"></span>
+        <span class="status-icons"><span>▂▄▆</span><span class="battery"></span></span>
+      </div>
+
+      <div class="screen">
+        <div class="screen-root bg-white relative pb-8">
+          <div class="absolute -top-12 -right-12 w-48 h-48 bg-[#002B66] rounded-full z-0"></div>
+          <div class="absolute top-12 -right-6 w-28 h-28 bg-amber-400 rounded-full z-0"></div>
+
+          <div class="relative z-10 px-6 pt-12">
+            <a href="index.html" class="p-2 -ml-2 text-slate-700 hover:bg-slate-100 rounded-full w-fit mb-6 inline-flex" style="text-decoration:none" aria-label="Back">←</a>
+
+            <div class="mb-6 font-black text-2xl tracking-tight">
+              <span style="color:#f59e0b">Biz</span><span style="color:#002B66">Link</span>
+              <div class="text-[10px] font-bold tracking-widest text-slate-400 mt-1">CONNECT · GROW · MOVE TOGETHER</div>
+            </div>
+
+            <div class="mt-4 mb-6">
+              <h1 class="text-2xl font-black text-slate-900">Create your account</h1>
+              <p class="text-slate-500 text-sm mt-1">Join BizLink to shop, sell and deliver locally</p>
+            </div>
+
+            <div id="signup-toast" class="hidden text-xs rounded-xl px-3 py-2 mb-3" role="status"></div>
+
+            <form id="signup-form" class="space-y-4">
+              <div>
+                <div class="block text-xs font-bold text-slate-800 mb-2">I am a…</div>
+                <div class="grid grid-cols-3 gap-2" id="account-types">
+                  <button type="button" data-type="customer" class="acct-type active p-3 rounded-xl border text-left border-blue-600 bg-blue-50/50">
+                    <div class="font-bold text-xs text-[#002B66]">Customer</div>
+                    <div class="text-[9px] text-slate-500 mt-0.5">Buy from local businesses</div>
+                  </button>
+                  <button type="button" data-type="business" class="acct-type p-3 rounded-xl border text-left border-slate-200 bg-white">
+                    <div class="font-bold text-xs">Business</div>
+                    <div class="text-[9px] text-slate-500 mt-0.5">Sell &amp; manage orders</div>
+                  </button>
+                  <button type="button" data-type="delivery" class="acct-type p-3 rounded-xl border text-left border-slate-200 bg-white">
+                    <div class="font-bold text-xs">Delivery</div>
+                    <div class="text-[9px] text-slate-500 mt-0.5">Deliver in your area</div>
+                  </button>
+                </div>
+                <input type="hidden" id="account-type" name="accountType" value="customer" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5" for="signup-name">Full name</label>
+                <input id="signup-name" name="name" type="text" required autocomplete="name"
+                  placeholder="e.g. Mpho Ramarumo"
+                  class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+                <p class="text-[10px] text-slate-400 mt-1">We’ll use your initials on your profile (e.g. MR)</p>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5" for="signup-email">Email address</label>
+                <input id="signup-email" name="email" type="email" required autocomplete="email"
+                  placeholder="you@example.com"
+                  class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5" for="signup-phone">Phone number</label>
+                <input id="signup-phone" name="phone" type="tel" required autocomplete="tel"
+                  placeholder="e.g. 082 123 4567"
+                  class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5" for="signup-address" id="address-label">Address</label>
+                <input id="signup-address" name="address" type="text" required autocomplete="street-address"
+                  placeholder="Street, suburb or township, city"
+                  class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+                <p id="address-hint" class="text-[10px] text-slate-400 mt-1">Used for deliveries and shown on your profile</p>
+              </div>
+
+              <div id="biz-fields" class="hidden">
+                <label class="block text-xs font-bold text-slate-800 mb-1.5" for="signup-business">Business name</label>
+                <input id="signup-business" name="businessName" type="text" autocomplete="organization"
+                  placeholder="e.g. Kasi Essentials"
+                  class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+                <p class="text-[10px] text-slate-400 mt-1">Shown on your dashboard and on every product you sell</p>
+              </div>
+
+              <div id="driver-fields" class="hidden space-y-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-800 mb-1.5" for="signup-vehicle">Vehicle type</label>
+                  <select id="signup-vehicle" name="vehicleType"
+                    class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm">
+                    <option value="Scooter">Scooter</option>
+                    <option value="Motorbike">Motorbike</option>
+                    <option value="Car">Car</option>
+                    <option value="Bakkie">Bakkie</option>
+                    <option value="Bicycle">Bicycle</option>
+                  </select>
+                </div>
+                <div id="plate-wrap">
+                  <label class="block text-xs font-bold text-slate-800 mb-1.5" for="signup-plate">Number plate</label>
+                  <input id="signup-plate" name="plate" type="text" autocomplete="off" autocapitalize="characters"
+                    placeholder="e.g. GP 48 21 TR"
+                    class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1.5" for="signup-password">Password</label>
+                <div class="relative">
+                  <input id="signup-password" name="password" type="password" required autocomplete="new-password"
+                    placeholder="Min 8 chars, letter, number, symbol"
+                    class="w-full py-3 pl-4 pr-11 bg-slate-50 border border-slate-200 rounded-xl text-sm" />
+                  <button type="button" id="toggle-pw" class="absolute right-3 top-3 text-xs font-bold text-slate-500">Show</button>
+                </div>
+                <ul id="pw-rules" class="mt-2 text-[11px] text-slate-500 space-y-0.5 list-none pl-0">
+                  <li data-rule="len">• At least 8 characters</li>
+                  <li data-rule="letter">• A letter</li>
+                  <li data-rule="num">• A number</li>
+                  <li data-rule="sym">• A symbol</li>
+                </ul>
+              </div>
+
+              <div class="flex items-center space-x-2 pt-1">
+                <input type="checkbox" id="terms" required class="rounded" />
+                <label for="terms" class="text-[11px] text-slate-600">
+                  I agree to the <span class="text-blue-600 underline font-medium">Terms</span> and <span class="text-blue-600 underline font-medium">Privacy Policy</span>
+                </label>
+              </div>
+
+              <button type="submit" id="signup-btn" class="w-full bg-[#002B66] text-white font-bold py-3.5 px-4 rounded-xl shadow-md hover:bg-[#001d47] transition mt-2">
+                Create Account →
+              </button>
+            </form>
+
+            <div class="mt-6 text-center pb-8">
+              <p class="text-xs text-slate-500">Already have an account?
+                <a href="signin.html" class="font-bold text-blue-600 hover:underline ml-1">Sign in</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/signup.js"></script>
+</body>
+</html>

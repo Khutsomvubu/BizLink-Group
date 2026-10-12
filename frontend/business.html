@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — BizLink</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-role="business">
+  <script src="js/icons.js"></script>
+  <main class="app-shell">
+    <div class="phone-frame">
+      <div class="phone-statusbar">
+        <span>9:41</span>
+        <span class="notch"></span>
+        <span class="status-icons"><span>▂▄▆</span><span class="battery"></span></span>
+      </div>
+
+      <div class="screen">
+        <div class="screen-root bz-screen">
+          <div class="bz-scroll">
+            <header class="bz-head">
+              <div>
+                <div class="bz-logo"><span class="biz">Biz</span><span class="link">Link</span></div>
+                <div class="bz-tagline">Business Centre</div>
+              </div>
+              <div class="bz-head-actions">
+                <a href="business-orders.html#new" class="bz-iconbtn" id="bell" aria-label="New orders"><svg class="ic"><use href="#i-bell"/></svg><span class="bz-dot hidden" id="bell-dot"></span></a>
+                <a href="profile.html" class="bz-iconbtn" aria-label="Profile"><svg class="ic"><use href="#i-user"/></svg></a>
+              </div>
+            </header>
+
+            <div class="bd-title">
+              <h1>Business Analytics</h1>
+              <span class="bd-month" id="bd-month"></span>
+            </div>
+            <div class="bd-shoprow">
+              <div class="bd-shopname"><b id="bd-shop">Your shop</b><span id="bd-area"></span></div>
+              <button type="button" class="bd-sw" id="bd-open" role="switch" aria-checked="true" aria-label="Shop open for orders"><i></i><span id="bd-open-lbl">Open</span></button>
+            </div>
+
+            <div id="bd-closed" class="bd-closed hidden"><b>You’re closed</b>Customers can’t order from you until you switch back to Open.</div>
+
+            <section class="bd-stats" id="bd-stats" aria-label="Today"></section>
+
+            <section class="bd-card" id="bd-chart" aria-label="Sales, last 7 days"></section>
+
+            <div class="bd-sec"><h2>New orders</h2><a href="business-orders.html#new" id="bd-new-all" class="hidden">See all</a></div>
+            <div class="bd-list" id="bd-new"></div>
+
+            <div class="bd-sec"><h2>Top-selling products</h2></div>
+            <div id="bd-top"></div>
+
+            <div id="bd-alert"></div>
+            <div class="bd-foot"></div>
+          </div>
+          <nav class="bottom-nav" aria-label="Main" data-role-nav data-active="dashboard"></nav>
+        </div>
+        <div id="toast" class="bz-toast hidden" role="status"></div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/products-store.js"></script>
+  <script src="js/orders-store.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/biz-ui.js"></script>
+  <script src="js/business.js"></script>
+</body>
+</html>

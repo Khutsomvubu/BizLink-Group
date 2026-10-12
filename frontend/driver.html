@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — BizLink</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body data-role="delivery">
+  <script src="js/icons.js"></script>
+  <main class="app-shell">
+    <div class="phone-frame">
+      <div class="phone-statusbar">
+        <span>9:41</span>
+        <span class="notch"></span>
+        <span class="status-icons"><span>▂▄▆</span><span class="battery"></span></span>
+      </div>
+
+      <div class="screen">
+        <div class="screen-root bz-screen">
+          <div class="bz-scroll">
+            <header class="bz-head">
+              <div>
+                <div class="bz-logo"><span class="biz">Biz</span><span class="link">Link</span></div>
+                <div class="bz-tagline">Driver Centre</div>
+              </div>
+              <div class="bz-head-actions">
+                <a href="driver.html#jobs" class="bz-iconbtn" aria-label="Available deliveries"><svg class="ic"><use href="#i-bell"/></svg><span class="bz-dot hidden" id="bell-dot"></span></a>
+                <a href="profile.html" class="bz-iconbtn" aria-label="Profile"><svg class="ic"><use href="#i-user"/></svg></a>
+              </div>
+            </header>
+
+            <div class="bd-title">
+              <h1>Driver Dashboard</h1>
+              <span class="bd-month" id="bd-month"></span>
+            </div>
+            <div class="bd-shoprow">
+              <div class="bd-shopname"><b id="dv-name">Driver</b><span id="dv-sub">Delivery partner</span></div>
+              <button type="button" class="bd-sw" id="dv-online" role="switch" aria-checked="false" aria-label="Online for deliveries"><i></i><span id="dv-online-lbl">Offline</span></button>
+            </div>
+
+            <section class="dv-card" aria-label="Your vehicle">
+              <div class="dv-ic"><svg class="ic"><use href="#i-bike"/></svg></div>
+              <div class="dv-info"><div class="l">Your vehicle</div><div class="v" id="dv-vehicle">Vehicle</div><div class="s" id="dv-vsub"></div></div>
+              <div class="dv-plate hidden" id="dv-plate"></div>
+            </section>
+            <a class="dv-edit" href="profile.html">Vehicle details are in your profile</a>
+
+            <section class="bd-stats" id="dv-stats" aria-label="Commission"></section>
+            <section class="bd-card" id="dv-chart" aria-label="Commission, last 7 days"></section>
+
+            <div id="dv-active"></div>
+
+            <div class="bd-sec" id="jobs"><h2>Available deliveries</h2><span class="bd-total" id="dv-jobcount"></span></div>
+            <div class="bd-list" id="dv-jobs"></div>
+            <div class="bd-foot"></div>
+          </div>
+          <nav class="bottom-nav" aria-label="Main" data-role-nav data-active="jobs"></nav>
+        </div>
+        <div id="toast" class="bz-toast hidden" role="status"></div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/products-store.js"></script>
+  <script src="js/orders-store.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/biz-ui.js"></script>
+  <script src="js/driver-ui.js"></script>
+  <script src="js/driver.js"></script>
+</body>
+</html>

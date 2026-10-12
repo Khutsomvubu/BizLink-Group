@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orders — BizLink</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <script src="js/icons.js"></script>
+  <main class="app-shell">
+    <div class="phone-frame">
+      <div class="phone-statusbar">
+        <span>9:41</span>
+        <span class="notch"></span>
+        <span class="status-icons"><span>▂▄▆</span><span class="battery"></span></span>
+      </div>
+
+      <div class="screen">
+        <div class="screen-root bz-screen">
+          <div class="bz-scroll">
+            <div class="pf-head">
+              <h1>My orders</h1>
+              <a href="browse.html#cart" class="bz-iconbtn" aria-label="Open cart"><svg class="ic"><use href="#i-cart"/></svg><span class="bz-badge hidden" data-cart-badge>0</span></a>
+            </div>
+
+            <div class="od-tabs" role="tablist" aria-label="Order status">
+              <button type="button" role="tab" class="od-tab active" data-tab="active" aria-selected="true">Active <span id="count-active">0</span></button>
+              <button type="button" role="tab" class="od-tab" data-tab="past" aria-selected="false">Past <span id="count-past">0</span></button>
+            </div>
+
+            <div id="orders-list" class="od-list"></div>
+
+            <div id="orders-empty" class="od-empty hidden">
+              <div class="od-empty-ic"><svg class="ic"><use href="#i-orders"/></svg></div>
+              <b id="empty-title">No orders yet</b>
+              <p id="empty-text">When you place an order, you can follow it here.</p>
+              <a href="browse.html" class="bz-btn primary od-empty-btn" id="empty-cta">Start shopping</a>
+            </div>
+          </div>
+
+          <nav class="bottom-nav" aria-label="Main">
+            <a href="browse.html" class="nav-item"><span class="nav-ic"><svg class="ic"><use href="#i-home"/></svg></span><span class="nav-lbl">Home</span></a>
+            <a href="browse.html" class="nav-item"><span class="nav-ic"><svg class="ic"><use href="#i-search"/></svg></span><span class="nav-lbl">Browse</span></a>
+            <a href="orders.html" class="nav-item active"><span class="nav-ic"><svg class="ic"><use href="#i-orders"/></svg><span class="nav-badge hidden" data-orders-badge>0</span></span><span class="nav-lbl">Orders</span></a>
+            <a href="browse.html#cart" class="nav-item" id="nav-cart"><span class="nav-ic"><svg class="ic"><use href="#i-cart"/></svg><span class="nav-badge hidden" data-cart-badge>0</span></span><span class="nav-lbl">Cart</span></a>
+            <a href="profile.html" class="nav-item"><span class="nav-ic"><svg class="ic"><use href="#i-user"/></svg></span><span class="nav-lbl">Profile</span></a>
+          </nav>
+        </div>
+
+        <!-- Tracking sheet -->
+        <div id="track-sheet" class="bz-sheet-wrap hidden" role="dialog" aria-modal="true" aria-label="Order tracking">
+          <div class="bz-sheet">
+            <div class="bz-sheet-grab"></div>
+            <div class="bz-sheet-head">
+              <h2 id="track-title">Order</h2>
+              <button type="button" id="track-close" class="bz-iconbtn" aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button>
+            </div>
+            <div id="track-body"></div>
+          </div>
+        </div>
+
+        <!-- Driver chat -->
+        <div id="chat-sheet" class="bz-sheet-wrap hidden" role="dialog" aria-modal="true" aria-label="Message your driver">
+          <div class="bz-sheet ch-sheet">
+            <div class="bz-sheet-grab"></div>
+            <div class="bz-sheet-head">
+              <div class="ch-who"><span class="dr-avatar" id="chat-avatar">?</span><div><h2 id="chat-name">Driver</h2><div class="ch-sub" id="chat-sub"></div></div></div>
+              <button type="button" id="chat-close" class="bz-iconbtn" aria-label="Close chat"><svg class="ic"><use href="#i-close"/></svg></button>
+            </div>
+            <div id="chat-log" class="ch-log" aria-live="polite"></div>
+            <div id="chat-quick" class="ch-quick"></div>
+            <form id="chat-form" class="ch-form" autocomplete="off">
+              <input id="chat-input" type="text" maxlength="300" placeholder="Type a message…" aria-label="Message" />
+              <button type="submit" class="ch-send">Send</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Help / complaint -->
+        <div id="help-sheet" class="bz-sheet-wrap hidden" role="dialog" aria-modal="true" aria-label="Get help with your order">
+          <div class="bz-sheet">
+            <div class="bz-sheet-grab"></div>
+            <div class="bz-sheet-head"><h2 id="help-title">Need help?</h2><button type="button" id="help-close" class="bz-iconbtn" aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button></div>
+
+            <div id="help-main">
+              <button type="button" id="help-call" class="hp-row">
+                <span class="hp-ic"><svg class="ic"><use href="#i-phone"/></svg></span>
+                <span><b>Call BizLink support</b><small id="help-phone"></small></span>
+              </button>
+
+              <h3>Report a problem</h3>
+              <form id="help-form" novalidate>
+                <div class="bz-opts" id="help-reasons" role="radiogroup" aria-label="What went wrong?">
+                  <button type="button" class="bz-opt" role="radio" aria-checked="false" data-v="Taking too long">Taking too long</button>
+                  <button type="button" class="bz-opt" role="radio" aria-checked="false" data-v="Driver not responding">Driver not responding</button>
+                  <button type="button" class="bz-opt" role="radio" aria-checked="false" data-v="Missing or wrong items">Missing or wrong items</button>
+                  <button type="button" class="bz-opt" role="radio" aria-checked="false" data-v="Other">Other</button>
+                </div>
+                <label class="hp-label" for="help-note">Tell us more <span>(optional)</span></label>
+                <textarea id="help-note" class="hp-note" rows="3" maxlength="500" placeholder="e.g. My driver has been at the same spot for 10 minutes"></textarea>
+                <p id="help-err" class="err hidden" role="alert">Choose what went wrong first.</p>
+                <div class="bz-sheet-actions"><button type="submit" class="bz-btn primary">Send complaint</button></div>
+              </form>
+            </div>
+
+            <div id="help-done" class="hp-done hidden">
+              <div class="hp-done-ic"><svg class="ic"><use href="#i-check"/></svg></div>
+              <b id="help-ref">Complaint received</b>
+              <p>We’ve passed this to our support team. They’ll contact you on <span id="help-contact"></span> shortly.</p>
+              <div class="bz-sheet-actions"><button type="button" id="help-ok" class="bz-btn primary">Back to order</button></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="toast" class="bz-toast hidden" role="status"></div>
+      </div>
+
+      <div class="home-indicator"></div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/products-store.js"></script>
+  <script src="js/orders-store.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/orders.js"></script>
+</body>
+</html>
