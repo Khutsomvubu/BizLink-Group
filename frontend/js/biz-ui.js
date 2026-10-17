@@ -12,7 +12,7 @@
 
   /* An order counts as money once the shop has accepted it, and never if declined / cancelled. */
   const isLive = o => o.state !== 'declined' && o.state !== 'cancelled' && !o.cancelledAt;
-  const isSale = o => isLive(o) && o.state !== 'placed';
+  const isSale = o => isLive(o) && o.state !== 'placed' && !o.isDemo;
 
   const PILL = {
     placed: ['placed', 'New'], accepted: ['accepted', 'Accepted'], preparing: ['preparing', 'Preparing'],
@@ -39,6 +39,7 @@
     return {
       email: s.email,
       name: u.businessName || s.businessName || 'Your shop',
+      businessType: u.businessType || s.businessType || 'local-shop',
       area: parts.slice(1, 3).join(', ') || parts[0] || ''
     };
   }
@@ -69,7 +70,7 @@
         t.qty += i.qty; t.revenue += i.price * i.qty;
       });
     });
-    const today = orders.filter(o => isLive(o) && sod(o.placedAt) === t0);
+    const today = orders.filter(o => isLive(o) && !o.isDemo && sod(o.placedAt) === t0);
     const total7 = days.reduce((s, d) => s + d.total, 0);
     let best = -1;
     days.forEach((d, i) => { if (d.total > 0 && (best < 0 || d.total >= days[best].total)) best = i; });
@@ -92,21 +93,39 @@
   function orderCard(o, opts) {
     const pill = PILL[o.state] || ['placed', o.state];
     const items = o.items.map(i => `<li><b>${i.qty} ×</b><span>${esc(i.name)}</span></li>`).join('');
-    const who = [o.customerName || 'Customer', o.dropArea].filter(Boolean).join(' · ');
+    const buyer = o.buyerType === 'business'
+      ? 'Local shop: ' + (o.customerName || 'Local shop')
+      : (o.customerName || 'Customer');
+    const who = [buyer, o.dropArea].filter(Boolean).join(' · ');
     let foot = '';
     const n = esc(o.number);
     if (o.state === 'placed') {
-      foot = `<div class="bo-actions">
+      foot = o.autoPrepare
+        ? '<div class="bo-note teal"><div>Automatic order processing: confirmation and preparation are simulated.</div></div>'
+        : `<div class="bo-actions">
         <button type="button" class="bz-btn primary" data-act="accept" data-num="${n}">Accept order</button>
         <button type="button" class="bz-btn decline" data-act="decline" data-num="${n}">Decline</button></div>`;
     } else if (o.state === 'accepted') {
-      foot = `<div class="bo-actions"><button type="button" class="bz-btn primary" data-act="prepare" data-num="${n}">Start preparing</button></div>`;
+      foot = o.autoPrepare
+        ? '<div class="bo-note teal"><div>Accepted automatically. Preparation will begin shortly.</div></div>'
+        : `<div class="bo-actions"><button type="button" class="bz-btn primary" data-act="prepare" data-num="${n}">Start preparing</button></div>`;
     } else if (o.state === 'preparing') {
-      foot = `<div class="bo-actions"><button type="button" class="bz-btn primary" data-act="ready" data-num="${n}">Mark as ready</button></div>`;
+      foot = o.autoPrepare
+        ? '<div class="bo-note teal"><div>Being prepared automatically. It will soon be ready for pickup.</div></div>'
+        : `<div class="bo-actions"><button type="button" class="bz-btn primary" data-act="ready" data-num="${n}">Mark as ready</button></div>`;
     } else if (o.state === 'ready') {
       foot = `<div class="bo-note teal"><svg class="ic"><use href="#i-bike"/></svg><div>${o.driverEmail ? `<b>${esc(driverName(o))}</b> is coming to collect this.` : 'Packed and waiting for a driver to take it.'}</div></div>`;
     } else if (o.state === 'at_shop') {
-      foot = `<div class="bo-note teal"><svg class="ic"><use href="#i-bike"/></svg><div><b>${esc(driverName(o))}</b> is at your shop. Hand over the order.</div></div>`;
+      const awaitingHandoff = BizOrders.batchAwaitingShop(o.number, o.shopEmail);
+      const batch = o.batchId && BizOrders.batchForOrder(o.number);
+      const handoffNumber = batch && batch.shopStops[batch.currentShopIndex]
+        ? batch.shopStops[batch.currentShopIndex].orderNumbers[0]
+        : o.number;
+      foot = awaitingHandoff
+        ? `<div class="bo-actions"><button type="button" class="bz-btn primary" data-act="handoff" data-batch="${esc(o.batchId)}">Confirm batch handoff to driver</button></div>`
+        : o.batchId
+          ? `<div class="bo-note teal"><svg class="ic"><use href="#i-bike"/></svg><div>This order is part of a pickup batch. Confirm handoff for this shop’s orders using order #${esc(handoffNumber)}.</div></div>`
+        : `<div class="bo-note teal"><svg class="ic"><use href="#i-bike"/></svg><div><b>${esc(driverName(o))}</b> is at your shop. Prepare the order for handoff.</div></div>`;
     } else if (o.state === 'declined') {
       foot = `<div class="bo-note"><svg class="ic"><use href="#i-close"/></svg><div>You declined this order. Stock was put back.</div></div>`;
     } else if (o.state === 'cancelled') {
@@ -114,9 +133,10 @@
     }
     return `<article class="bo-card${o.state === 'placed' && opts && opts.fresh ? ' fresh' : ''}" data-card="${n}">
       <div class="od-top">
-        <div><div class="od-num">Order #${n}</div><div class="od-date">${esc(ago(o.placedAt))}</div></div>
+        <div><div class="od-num">Order #${n}${o.isDemo ? ' · DEMO' : ''}</div><div class="od-date">${esc(ago(o.placedAt))}</div></div>
         <span class="od-pill ${pill[0]}">${esc(pill[1])}</span>
       </div>
+      ${o.isDemo ? '<div class="bo-note" role="note"><div><b>DEMO ONLY</b> — simulated customer/order details; do not pack or dispatch as a real sale.</div></div>' : ''}
       <div class="bo-cust"><svg class="ic"><use href="#i-pin"/></svg><span>${esc(who)}</span></div>
       <ul class="bo-items">${items}</ul>
       <div class="bo-total"><span>${o.items.reduce((s, i) => s + i.qty, 0)} item(s)</span><b>${money(o.total)}</b></div>
@@ -130,6 +150,13 @@
       const b = e.target.closest('[data-act]');
       if (!b || !root.contains(b)) return;
       const num = b.dataset.num, act = b.dataset.act;
+      if (act === 'handoff') {
+        toast(BizOrders.confirmShopHandoff(b.dataset.batch, email)
+          ? 'Handoff confirmed — the driver can continue'
+          : 'This handoff has changed — refreshed');
+        after();
+        return;
+      }
       if (act === 'decline') {
         confirmSheet({
           title: 'Decline order #' + num + '?',

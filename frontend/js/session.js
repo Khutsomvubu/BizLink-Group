@@ -19,12 +19,13 @@
     /** Home page for a role (or for the signed-in user). */
     homeFor(role) { return HOME[role] || HOME.customer; },
 
-    set(user) {
+    set(user, options) {
       const payload = {
         email: user.email,
         name: user.name || '',
         accountType: HOME[user.accountType] ? user.accountType : 'customer',
         businessName: user.businessName || '',
+        businessType: user.businessType || '',
         vehicleType: user.vehicleType || '',
         plate: user.plate || '',
         phone: user.phone || '',
@@ -34,6 +35,9 @@
         at: Date.now()
       };
       localStorage.setItem(KEY, JSON.stringify(payload));
+      if (options && options.newLogin && payload.accountType === 'business' && payload.businessType === 'local-shop') {
+        localStorage.setItem('bizlink_demo_order_due_' + payload.email, String(Date.now() + 20000));
+      }
       return payload;
     },
 

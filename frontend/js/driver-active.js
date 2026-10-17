@@ -31,7 +31,66 @@
       <form class="dc-form" id="dc-form"><input id="dc-input" maxlength="300" placeholder="Type a message" autocomplete="off" value="${U.esc(draft)}"><button type="submit" class="bz-btn primary">Send</button></form></div>`;
   }
 
+  function renderBatch(batch, force) {
+    const orders = BizOrders.batchOrders(batch);
+    if (!orders.length) return;
+    const sig = batch.id + batch.status + batch.currentShopIndex + batch.currentDeliveryIndex
+      + orders.map(order => order.state + (order.messages || []).length).join(',');
+    if (!force && sig === lastSig) return;
+    lastSig = sig;
+    const input = $('dc-input'); if (input) draft = input.value;
+    const shops = batch.shopStops.map((stop, index) => {
+      const stopOrders = stop.orderNumbers.map(number => orders.find(order => order.number === number)).filter(Boolean);
+      const complete = index < batch.currentShopIndex;
+      const current = index === batch.currentShopIndex;
+      const status = complete ? 'Handoff confirmed' : current
+        ? batch.status === 'awaiting_shop' ? 'Waiting for shop to confirm handoff' : 'Current pickup stop'
+        : 'Upcoming pickup';
+      const list = stopOrders.flatMap(order => order.items.map(item =>
+        `<li><b>${item.qty} ×</b><span>${U.esc(item.name)} · Order #${U.esc(order.number)}</span></li>`)).join('');
+      return `<div class="da-card${current ? '' : ' dim'}"><h2>Pickup ${index + 1} of ${batch.shopStops.length} · ${U.esc(stop.name)}</h2>
+        ${stopOrders.some(order => order.isDemo) ? '<div class="bo-note" role="note"><div><b>DEMO ONLY</b> — simulated order; do not collect as a real delivery.</div></div>' : ''}
+        <div class="who">${U.esc(stop.address || 'Address not added')}</div><div class="sub">${U.esc(status)}</div>
+        <ul class="bo-items" style="margin-top:8px">${list}</ul>${current && stop.phone ? `<div class="dr-actions">${callBtn('Call shop', stop.phone)}</div>` : ''}</div>`;
+    }).join('');
+    const isPickup = batch.status === 'to_shop';
+    const isHandoff = batch.status === 'awaiting_shop';
+    const currentDrop = batch.status === 'delivering' ? orders[batch.currentDeliveryIndex] : null;
+    const demoOnly = orders.every(order => order.isDemo);
+    const mixedDemo = !demoOnly && orders.some(order => order.isDemo);
+    const dropoffs = orders.map((order, index) => {
+      const complete = order.state === 'delivered';
+      const current = currentDrop && order.number === currentDrop.number;
+      return `<div class="da-card${current ? '' : ' dim'}"><h2>Drop-off ${index + 1} of ${orders.length} · #${U.esc(order.number)}</h2>
+        ${order.isDemo ? '<div class="bo-note" role="note"><div><b>DEMO ONLY</b> — customer and address are simulated. Do not confirm a real drop-off.</div></div>' : ''}
+        <div class="who">${U.esc(order.customerName || 'Customer')}</div><div class="sub">${U.esc(order.address || 'Address not added')}</div>
+        <div class="sub">${complete ? 'Drop-off confirmed by driver' : current ? 'Current delivery · driver confirmation required' : 'Waiting for previous drop-off'}</div>
+        <ul class="bo-items" style="margin-top:8px">${order.items.map(item => `<li><b>${item.qty} ×</b><span>${U.esc(item.name)}</span></li>`).join('')}</ul>
+        ${current && order.phone ? `<div class="dr-actions">${callBtn('Call customer', order.phone)}</div>` : ''}
+        ${current ? `<button type="button" class="bz-btn primary da-go" data-confirm-drop="${U.esc(order.number)}">Confirm customer drop-off</button>` : ''}</div>`;
+    }).join('');
+    $('da-pill').textContent = batch.status === 'delivering' ? 'Delivering batch' : isHandoff ? 'Shop handoff' : 'Pickup batch';
+    $('da-pill').className = 'od-pill ' + (batch.status === 'delivering' ? 'out' : 'ready');
+    $('da-body').innerHTML = `
+      <div class="da-hero"><div><div class="l">${demoOnly ? 'DEMO · no commission' : mixedDemo ? 'Commission · DEMO excluded' : 'Batch commission'}</div><div class="v">${U.money(orders.reduce((sum, order) => sum + (order.isDemo ? 0 : order.payout || 0), 0))}</div></div>
+        <div class="r">Batch <b>${U.esc(batch.id)}</b><br>${orders.length} orders · max ${BizOrders.MAX_BATCH_SIZE}</div></div>
+      <div class="da-card"><h2>Pickup route</h2><div class="sub">${batch.shopStops.length} shop stop${batch.shopStops.length === 1 ? '' : 's'}</div></div>
+      ${shops}
+      ${isPickup ? `<button type="button" class="bz-btn primary da-go" id="da-batch-go">Confirm arrival at pickup</button>` : ''}
+      ${isHandoff ? '<div class="da-hint">The shop must confirm the handoff before you can continue.</div>' : ''}
+      <div class="da-card"><h2>Customer drop-offs</h2><div class="sub">${orders.length} customer drop-off${orders.length === 1 ? '' : 's'} · driver confirms each handoff separately</div></div>
+      ${dropoffs}
+      ${currentDrop ? chat(currentDrop) : ''}`;
+    const log = $('dc-log'); if (log) log.scrollTop = log.scrollHeight;
+    BizNav.refresh();
+  }
+
   function render(force) {
+    const batch = BizOrders.activeBatchFor(me.email);
+    if (batch) {
+      renderBatch(batch, force);
+      return;
+    }
     const o = BizOrders.activeFor(me.email);
     const pill = $('da-pill');
     if (!o) {
@@ -68,7 +127,11 @@
   }
 
   function send(text) {
-    const o = BizOrders.activeFor(me.email);
+    const batch = BizOrders.activeBatchFor(me.email);
+    const orders = batch ? BizOrders.batchOrders(batch) : [];
+    const o = batch && batch.status === 'delivering'
+      ? orders[batch.currentDeliveryIndex]
+      : batch ? null : BizOrders.activeFor(me.email);
     text = String(text || '').trim();
     if (!o || !text) return;
     BizOrders.addMessage(me.email, o.number, { from: 'driver', text });
@@ -79,6 +142,23 @@
   $('da-body').addEventListener('click', e => {
     const q = e.target.closest('[data-q]');
     if (q) { send(q.dataset.q); return; }
+    const batch = BizOrders.activeBatchFor(me.email);
+    if (batch && e.target.closest('#da-batch-go')) {
+      const result = BizOrders.markBatchArrived(batch.id, me.email);
+      if (!result.ok) U.toast(result.reason || 'This pickup has changed');
+      render(true);
+      return;
+    }
+    const delivered = e.target.closest('[data-confirm-drop]');
+    if (batch && delivered) {
+      const number = delivered.dataset.confirmDrop;
+      const order = BizOrders.find(me.email, number);
+      const completed = BizOrders.confirmBatchDelivery(batch.id, number, me.email);
+      if (!completed) { U.toast('This delivery has changed — refreshed'); render(true); return; }
+      render(true);
+      U.toast('Order #' + number + ' delivery confirmed' + (order ? ' · ' + U.money(order.payout || 0) + ' commission added' : ''));
+      return;
+    }
     if (!e.target.closest('#da-go')) return;
     const o = BizOrders.activeFor(me.email);
     if (!o) return;

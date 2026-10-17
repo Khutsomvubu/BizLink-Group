@@ -53,7 +53,7 @@
         return;
       }
       const user = BizAuth.getUser(email);
-      BizSession.set(user);
+      BizSession.set(user, { newLogin: true });
       location.href = BizSession.homeFor(user.accountType);
     } catch (err) {
       console.error(err);

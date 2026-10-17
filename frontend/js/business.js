@@ -8,6 +8,7 @@
   $('bd-shop').textContent = shop.name;
   $('bd-area').textContent = shop.area || 'Add your address in Profile';
   $('bd-month').textContent = new Date().toLocaleDateString('en-ZA', { month: 'short', year: 'numeric' });
+  $('bd-supplier-actions').classList.toggle('hidden', shop.businessType !== 'local-shop');
 
   function trend(cls, text) { return `<div class="t ${cls}">${text}</div>`; }
 
@@ -63,7 +64,15 @@
     $('bd-new-all').classList.toggle('hidden', list.length <= 2);
     $('bd-new').innerHTML = list.length
       ? list.slice(0, 2).map(o => U.orderCard(o, { fresh: true })).join('')
-      : '<div class="bd-quiet"><b>No new orders</b>New orders show up here the moment a customer checks out.</div>';
+      : '<div class="bd-quiet"><b>No new orders</b>Orders from customers and local shops show up here when they check out.</div>';
+  }
+
+  function renderDemo() {
+    const active = BizOrders.forShop(shop.email)
+      .filter(o => o.isDemo && !['delivered', 'declined', 'cancelled'].includes(o.state))
+      .sort((a, b) => b.placedAt - a.placedAt);
+    $('bd-demo-section').classList.toggle('hidden', active.length === 0);
+    $('bd-demo').innerHTML = active.map(o => U.orderCard(o)).join('');
   }
 
   function renderTop(s) {
@@ -83,8 +92,32 @@
 
   function render() {
     const s = U.stats(shop.email);
-    renderSwitch(); renderStats(s); renderChart(s); renderNew(s); renderTop(s); renderAlert(s);
+    renderSwitch(); renderStats(s); renderChart(s); renderNew(s); renderDemo(); renderTop(s); renderAlert(s);
     if (window.BizNav) BizNav.refresh();
+  }
+
+  function scheduleDemoCustomerOrder() {
+    const dueKey = 'bizlink_demo_order_due_' + shop.email;
+    const due = localStorage.getItem(dueKey);
+    if (!due || shop.businessType !== 'local-shop') return;
+    const token = Number(due);
+    if (!Number.isFinite(token)) {
+      U.toast('The scheduled demo order has an invalid start time.', 5000);
+      localStorage.removeItem(dueKey);
+      return;
+    }
+    setTimeout(() => {
+      const session = BizSession.get();
+      if (localStorage.getItem(dueKey) !== due || !session || session.email !== shop.email) return;
+      const result = BizOrders.createDemoCustomerOrder(shop.email, due);
+      if (!result.ok) {
+        U.toast(result.reason, 5000);
+        return;
+      }
+      localStorage.removeItem(dueKey);
+      U.toast(result.alreadyCreated ? 'The scheduled demo order is already on your dashboard.' : 'A DEMO customer order has arrived.');
+      render();
+    }, Math.max(0, token - Date.now()));
   }
 
   $('bd-open').addEventListener('click', () => {
@@ -95,8 +128,9 @@
   });
 
   U.bindActions($('bd-new'), shop.email, render);
-  U.watchNew(shop.email, o => { U.toast('New order #' + o.number); render(); });
+  U.watchNew(shop.email, o => { U.toast((o.isDemo ? 'New DEMO order #' : 'New order #') + o.number); render(); });
   window.addEventListener('storage', render);
   setInterval(render, 5000);
   render();
+  scheduleDemoCustomerOrder();
 })();

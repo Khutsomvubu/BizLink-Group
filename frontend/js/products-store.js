@@ -47,6 +47,21 @@
     ['p12', 'Koo Baked Beans 410g',               'freshstop@example.com',  'Groceries',      19.99, 4.5,  67, 55, '#fdba74', '#c2410c', 'box',    'KOO',       'BAKED BEANS',         '410g']
   ];
 
+  const PRODUCT_IMAGES = {
+    'Iwisa Super Maize Meal 10kg': 'iwisa_super_maizemeal_10kg.webp',
+    'Sunfoil Cooking Oil 2L': 'sunfoil_cooking_oil_2l.jpg',
+    'Coca-Cola Original 500ml (6 Pack)': 'coca_cola_500ml_6pack.jpg',
+    'Sasko Brown Bread 700g': 'sasko_brown_bread.webp',
+    'Skip Washing Powder 2kg': 'skip_washing_powder_2kg.jpg',
+    'BIC Pens (10 Pack)': 'bic_pens_10pack.webp',
+    'Sunlight Dishwashing Liquid 750ml': 'sunlight_dishwashing_liquid.webp',
+    'Lux Soap Bar 175g (3 Pack)': 'lux_soap_bar.jpg',
+    'Colgate Toothpaste 100ml': 'colgate_toothpaste.jpg',
+    'Fanta Orange 2L': 'fanta_orange-2l.webp',
+    'Tastic Long Grain Rice 2kg': 'tastic_long_grain_rice_2kg.jpg',
+    'Koo Baked Beans 410g': 'koo_baked_beans_410g.png'
+  };
+
   function seedIfNeeded() {
     if (localStorage.getItem(SEEDED)) return;
     const shops = (window.BizAuth && BizAuth.DEMO_SHOPS) || [];
@@ -54,6 +69,7 @@
     const list = SEED.map(r => ({
       id: r[0], shopEmail: r[2], vendor: nameOf(r[2]), name: r[1], category: r[3],
       price: r[4], stock: r[7], inStock: r[7] > 0, rating: r[5], ratings: r[6],
+      image: PRODUCT_IMAGES[r[1]] || '',
       tile: { c1: r[8], c2: r[9], shape: r[10], brand: r[11], sub: r[12], size: r[13] },
       createdAt: 0
     }));
@@ -62,7 +78,20 @@
     try { localStorage.setItem(SEEDED, '1'); } catch (e) {}
   }
 
-  function allRaw() { seedIfNeeded(); return read(PKEY, []); }
+  function allRaw() {
+    seedIfNeeded();
+    const list = read(PKEY, []);
+    let changed = false;
+    list.forEach(product => {
+      const image = PRODUCT_IMAGES[product.name];
+      if (!product.image && image) {
+        product.image = image;
+        changed = true;
+      }
+    });
+    if (changed) write(PKEY, list);
+    return list;
+  }
 
   /* A tile for products that don't have a hand-made one. */
   function autoTile(p) {
@@ -122,7 +151,7 @@
         id: 'p' + n, shopEmail: norm(shop.email), vendor: shop.businessName || '',
         name: f.name.trim(), category: f.category, price: round2(f.price),
         stock: Math.floor(Number(f.stock)), inStock: f.inStock !== false && Number(f.stock) > 0,
-        rating: 0, ratings: 0, tile: null, createdAt: Date.now()
+        rating: 0, ratings: 0, image: PRODUCT_IMAGES[f.name.trim()] || '', tile: null, createdAt: Date.now()
       };
       list.push(p);
       write(PKEY, list);

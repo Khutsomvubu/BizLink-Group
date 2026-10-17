@@ -18,7 +18,7 @@
   const at = o => (o.times && o.times.delivered) || o.placedAt;
 
   function stats(email) {
-    const done = BizOrders.forDriver(email).filter(o => o.state === 'delivered');
+    const done = BizOrders.forDriver(email).filter(o => o.state === 'delivered' && !o.isDemo);
     const t0 = U.sod(Date.now());
     const days = [];
     for (let i = 6; i >= 0; i--) {

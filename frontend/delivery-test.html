@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>End-to-end test mode — BizLink</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <script src="js/icons.js"></script>
+  <main class="app-shell">
+    <div class="phone-frame">
+      <div class="phone-statusbar">
+        <span>9:41</span>
+        <span class="notch"></span>
+        <span class="status-icons"><span>▂▄▆</span><span class="battery"></span></span>
+      </div>
+      <div class="screen">
+        <div class="screen-root bz-screen">
+          <div class="bz-scroll">
+            <div class="bz-page-brand"><a href="index.html" aria-label="BizLink home"><img src="media/logo.png" alt="BizLink" class="bz-page-logo-image" /></a></div>
+            <div class="pf-head"><h1>End-to-end test mode</h1><a href="driver.html" class="bz-link">Exit test</a></div>
+            <div class="bd-card">
+              <div class="bd-card-head"><h2>Automatic role workflow</h2></div>
+              <p>Run a fake order through the customer, local shop, supplier, and driver steps. All actions are simulated in this test page only; refreshing resets the test.</p>
+            </div>
+            <div id="delivery-test-content" aria-live="polite"></div>
+          </div>
+        </div>
+        <div id="toast" class="bz-toast hidden" role="status"></div>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </main>
+  <script src="js/delivery-test.js"></script>
+</body>
+</html>

@@ -23,6 +23,8 @@
   function syncRoleFields() {
     const biz = accountType === 'business', drv = accountType === 'delivery';
     $('biz-fields').classList.toggle('hidden', !biz);
+    $('business-type-fields').classList.toggle('hidden', !biz);
+    $('signup-business-type').required = biz;
     $('driver-fields').classList.toggle('hidden', !drv);
     $('plate-wrap').classList.toggle('hidden', drv && $('signup-vehicle').value === 'Bicycle');
     $('address-label').textContent = biz ? 'Shop address' : drv ? 'Home area' : 'Address';
@@ -59,6 +61,7 @@
     const phone = ($('signup-phone').value || '').trim();
     const address = ($('signup-address').value || '').trim();
     const password = $('signup-password').value;
+    const businessType = $('signup-business-type').value;
 
     if (!window.BizAuth || !BizAuth.supported()) {
       toast('Open the app from http://localhost or https so sign-up works.');
@@ -71,6 +74,7 @@
     const vehicleType = $('signup-vehicle').value;
     const plate = ($('signup-plate').value || '').trim().toUpperCase();
     if (accountType === 'business' && businessName.length < 2) { toast('Please enter your business name.'); return; }
+    if (accountType === 'business' && !businessType) { toast('Please choose your business type.'); return; }
     if (accountType === 'delivery' && vehicleType !== 'Bicycle' && plate.length < 3) { toast('Please enter your vehicle’s number plate.'); return; }
     if (!BizAuth.passwordOk(password)) {
       toast('Password needs 8+ characters with a letter, a number and a symbol.');
@@ -89,6 +93,7 @@
         address,
         accountType,
         businessName: accountType === 'business' ? businessName : '',
+        businessType: accountType === 'business' ? businessType : '',
         vehicleType: accountType === 'delivery' ? vehicleType : '',
         plate: accountType === 'delivery' && vehicleType !== 'Bicycle' ? plate : ''
       });
@@ -100,7 +105,7 @@
       }
 
       const user = BizAuth.getUser(email);
-      BizSession.set(user);
+      BizSession.set(user, { newLogin: true });
       toast('Welcome, ' + user.initials + '! Account created.', true);
       setTimeout(() => { location.href = BizSession.homeFor(user.accountType); }, 600);
     } catch (err) {

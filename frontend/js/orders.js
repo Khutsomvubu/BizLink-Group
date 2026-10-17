@@ -1,13 +1,26 @@
 /* orders.html — orders list, live tracking, driver call/chat, and complaints */
 (function () {
-  const session = BizSession.requireRole('customer');
-  if (!session) return;
+  const session = BizSession.get();
+  if (!session || !session.email) {
+    location.replace('signin.html');
+    return;
+  }
+  const user = (window.BizAuth && BizAuth.getUser(session.email)) || session;
+  const isBusinessPurchases = document.body.dataset.ordersRole === 'business';
+  const isLocalShop = isBusinessPurchases;
+  if (isBusinessPurchases
+    ? session.accountType !== 'business' || user.businessType !== 'local-shop'
+    : session.accountType !== 'customer') {
+    location.replace(BizSession.homeFor(session.accountType));
+    return;
+  }
 
   const $ = id => document.getElementById(id);
   const money = n => 'R' + Number(n).toFixed(2);
   const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
   const email = session.email;
   const ICON = n => `<svg class="ic"><use href="#i-${n}"/></svg>`;
+  if (isLocalShop) $('orders-page-title').textContent = 'Supplier purchases';
 
   let tab = 'active';
   let openNumber = null;       // order shown in the tracking sheet
@@ -114,6 +127,7 @@
             <span class="od-pill ${s.key}">${s.label}</span>
           </div>
           <div class="od-items">${esc(summary(o))}</div>
+          ${isLocalShop && o.shopName ? `<div class="od-vendor">Supplier: ${esc(o.shopName)}</div>` : ''}
           ${bar}
           <div class="od-bottom">
             <span>${itemCount(o)} ${itemCount(o) === 1 ? 'item' : 'items'}${hint}</span>
@@ -125,9 +139,11 @@
     $('orders-empty').classList.toggle('hidden', shown.length > 0);
     if (!shown.length) {
       const none = all.length === 0;
-      $('empty-title').textContent = none ? 'No orders yet' : (tab === 'active' ? 'No active orders' : 'No past orders yet');
+      $('empty-title').textContent = none
+        ? (isLocalShop ? 'No supplier purchases yet' : 'No orders yet')
+        : (tab === 'active' ? 'No active orders' : 'No past orders yet');
       $('empty-text').textContent = none
-        ? 'When you place an order, you can follow it here.'
+        ? (isLocalShop ? 'Orders you place with suppliers will appear here.' : 'When you place an order, you can follow it here.')
         : (tab === 'active' ? 'Your delivered and cancelled orders are under Past.' : 'Delivered and cancelled orders will show up here.');
       $('empty-cta').classList.toggle('hidden', !none && tab === 'past');
     }
@@ -152,7 +168,7 @@
 
   function driverCard(o, s) {
     if (!s.active || s.idx < 2) return '';
-    if (!BizOrders.AUTOPILOT && !o.driverEmail) return `<div class="lv-soon">${ICON('bike')}<span>Your order is packed. We’re waiting for a driver to collect it.</span></div>`;
+    if (!BizOrders.isAutopilot(o) && !o.driverEmail) return `<div class="lv-soon">${ICON('bike')}<span>Your order is packed. We’re waiting for a driver to collect it.</span></div>`;
     const d = BizOrders.driver(o);
     return `<div class="dr-card">
       <div class="dr-top">
@@ -194,9 +210,14 @@
         const done = i < s.idx || s.delivered;
         const current = i === s.idx && !s.delivered;
         const time = (done || current) ? clock(BizOrders.stageTime(o, i)) : '';
+        const desc = isLocalShop && i === 2 && o.state === 'ready'
+          ? 'Your supplier packed this purchase. A driver will collect it.'
+          : isLocalShop && i === 2 && o.state === 'at_shop'
+            ? 'Your supplier is handing the packed purchase to the driver.'
+            : st.desc;
         return `<li class="od-step ${done ? 'done' : current ? 'current' : ''}"${current ? ' aria-current="step"' : ''}>
           <span class="od-dot">${ICON('check')}</span>
-          <div><div class="t">${st.label}</div><div class="d">${st.desc}</div></div>
+          <div><div class="t">${st.label}</div><div class="d">${desc}</div></div>
           <span class="tm">${time}</span></li>`;
       }).join('');
     }

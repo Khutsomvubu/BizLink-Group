@@ -22,8 +22,8 @@
             <!-- Header -->
             <header class="bz-head">
               <div>
-                <div class="bz-logo"><span class="biz">Biz</span><span class="link">Link</span></div>
-                <div class="bz-tagline">Local business. Connected.</div>
+                <a class="bz-logo" href="index.html" aria-label="BizLink home"><img src="media/logo.png" alt="BizLink" class="bz-logo-image" /></a>
+                <div class="bz-tagline" id="browse-tagline">Local business. Connected.</div>
               </div>
               <div class="bz-head-actions">
                 <button type="button" id="bell-btn" class="bz-iconbtn" aria-label="Notifications">
@@ -67,12 +67,13 @@
 
             <!-- Browse row -->
             <div class="bz-row">
-              <h2>Browse products</h2>
+              <h2 id="browse-title">Browse products</h2>
               <div class="bz-tools">
                 <button type="button" id="filter-btn" class="bz-textbtn"><svg class="ic"><use href="#i-filter"/></svg>Filter</button>
                 <span class="bz-tools-sep"></span>
                 <button type="button" id="sort-btn" class="bz-textbtn"><svg class="ic"><use href="#i-sort"/></svg>Sort</button>
               </div>
+              <p id="browse-nearby-status" class="bz-nearby-status" aria-live="polite">Products are sorted by nearby area and distance.</p>
             </div>
 
             <!-- Products: markup in HTML; JS only filters, sorts and manages the cart -->
@@ -82,19 +83,13 @@
             </div>
 
             <div id="empty-state" class="bz-empty hidden">
-              <b>No products found</b>
-              Try a different search or clear your filters.
+              <b id="browse-empty-title">No products found</b>
+              <span id="browse-empty-message">Try a different search or clear your filters.</span>
               <div><button type="button" id="clear-filters" class="bz-link">Clear filters</button></div>
             </div>
           </div>
 
-          <nav class="bottom-nav" aria-label="Main">
-            <a href="browse.html" class="nav-item"><span class="nav-ic"><svg class="ic"><use href="#i-home"/></svg></span><span class="nav-lbl">Home</span></a>
-            <a href="browse.html" class="nav-item active"><span class="nav-ic"><svg class="ic"><use href="#i-search"/></svg></span><span class="nav-lbl">Browse</span></a>
-            <a href="orders.html" class="nav-item"><span class="nav-ic"><svg class="ic"><use href="#i-orders"/></svg><span class="nav-badge hidden" data-orders-badge>0</span></span><span class="nav-lbl">Orders</span></a>
-            <a href="browse.html#cart" class="nav-item" id="nav-cart"><span class="nav-ic"><svg class="ic"><use href="#i-cart"/></svg><span class="nav-badge hidden" data-cart-badge>0</span></span><span class="nav-lbl">Cart</span></a>
-            <a href="profile.html" class="nav-item"><span class="nav-ic"><svg class="ic"><use href="#i-user"/></svg></span><span class="nav-lbl">Profile</span></a>
-          </nav>
+          <nav class="bottom-nav" aria-label="Main" data-role-nav data-active="browse"></nav>
         </div>
 
         <!-- Filter sheet -->
@@ -161,6 +156,7 @@
 
   <script src="js/auth.js"></script>
   <script src="js/session.js"></script>
+  <script src="js/location.js"></script>
   <script src="js/products-store.js"></script>
   <script src="js/orders-store.js"></script>
   <script src="js/nav.js"></script>

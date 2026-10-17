@@ -17,7 +17,9 @@
     ],
     business: [
       ['dashboard', 'business.html', 'home', 'Dashboard'],
-      ['orders', 'business-orders.html', 'orders', 'Orders', 'data-shop-badge'],
+      ['browse', 'browse.html', 'search', 'Suppliers'],
+      ['purchases', 'business-purchases.html', 'orders', 'Purchases', 'data-orders-badge'],
+      ['sales', 'business-orders.html', 'bag', 'Sales', 'data-shop-badge'],
       ['products', 'business-products.html', 'box', 'Products'],
       ['profile', 'profile.html', 'user', 'Profile']
     ],
@@ -31,18 +33,31 @@
 
   function session() { try { return JSON.parse(localStorage.getItem('bizlink_session')); } catch (e) { return null; } }
   function role() { const s = session(); return s && NAVS[s.accountType] ? s.accountType : 'customer'; }
+  function navItems(s) {
+    if (!s || s.accountType !== 'business') return NAVS[role()];
+    const user = window.BizAuth && BizAuth.getUser(s.email);
+    const businessType = (user && user.businessType) || s.businessType;
+    return businessType === 'local-shop'
+      ? NAVS.business
+      : NAVS.business.filter(i => i[0] !== 'browse' && i[0] !== 'purchases');
+  }
 
   function render() {
     const nav = document.querySelector('nav.bottom-nav[data-role-nav]');
     if (!nav) return;
     const active = nav.dataset.active;
-    nav.innerHTML = NAVS[role()].map(i => item(i[0], i[1], i[2], i[3], i[4], i[5])).join('');
+    nav.innerHTML = navItems(session()).map(i => item(i[0], i[1], i[2], i[3], i[4], i[5])).join('');
     nav.querySelectorAll('.nav-item').forEach(a => a.classList.toggle('active', a.dataset.nav === active));
   }
 
   function cartCount() {
     try {
-      return (JSON.parse(localStorage.getItem('bizlink_cart')) || []).reduce((s, i) => s + (i.qty || 0), 0);
+      const s = session();
+      const user = s && s.accountType === 'business' && window.BizAuth && BizAuth.getUser(s.email);
+      const key = s && s.accountType === 'business' && ((user && user.businessType) || s.businessType) === 'local-shop'
+        ? 'bizlink_supplier_cart_' + s.email
+        : 'bizlink_cart';
+      return (JSON.parse(localStorage.getItem(key)) || []).reduce((sum, i) => sum + (i.qty || 0), 0);
     } catch (e) { return 0; }
   }
   function activeOrders() {
@@ -63,11 +78,11 @@
   }
   function openJobs() {
     const s = session();
-    return s && s.accountType === 'delivery' && window.BizOrders && BizOrders.isOnline(s.email) ? BizOrders.openJobs().length : 0;
+    return s && s.accountType === 'delivery' && window.BizOrders && BizOrders.isOnline(s.email) ? BizOrders.availableBatches(s.email).length : 0;
   }
   function driverActive() {
     const s = session();
-    return s && s.accountType === 'delivery' && window.BizOrders && BizOrders.activeFor(s.email) ? 1 : 0;
+    return s && s.accountType === 'delivery' && window.BizOrders && (BizOrders.activeFor(s.email) || BizOrders.activeBatchFor(s.email)) ? 1 : 0;
   }
   function refresh() {
     setBadges('[data-cart-badge]', cartCount());

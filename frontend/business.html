@@ -21,7 +21,7 @@
           <div class="bz-scroll">
             <header class="bz-head">
               <div>
-                <div class="bz-logo"><span class="biz">Biz</span><span class="link">Link</span></div>
+                <a class="bz-logo" href="index.html" aria-label="BizLink home"><img src="media/logo.png" alt="BizLink" class="bz-logo-image" /></a>
                 <div class="bz-tagline">Business Centre</div>
               </div>
               <div class="bz-head-actions">
@@ -38,10 +38,24 @@
               <div class="bd-shopname"><b id="bd-shop">Your shop</b><span id="bd-area"></span></div>
               <button type="button" class="bd-sw" id="bd-open" role="switch" aria-checked="true" aria-label="Shop open for orders"><i></i><span id="bd-open-lbl">Open</span></button>
             </div>
+            <p id="bd-location-status" class="bd-location-status" aria-live="polite">Nearby matching uses the suburb and town in your saved business address.</p>
+
+            <section id="bd-supplier-actions" class="bd-supplier-actions hidden" aria-label="Supplier purchasing">
+              <div><b>Restock your shop</b><span>Order stock from BizLink suppliers and track your purchases.</span></div>
+              <div class="bd-supplier-links">
+                <a href="browse.html" class="bz-btn primary">Browse suppliers</a>
+                <a href="business-purchases.html" class="bz-btn ghost">Supplier purchases</a>
+              </div>
+            </section>
 
             <div id="bd-closed" class="bd-closed hidden"><b>You’re closed</b>Customers can’t order from you until you switch back to Open.</div>
 
             <section class="bd-stats" id="bd-stats" aria-label="Today"></section>
+
+            <section id="bd-demo-section" class="hidden" aria-label="Demo order workflow">
+              <div class="bd-sec"><h2>DEMO test order</h2></div>
+              <div class="bd-list" id="bd-demo"></div>
+            </section>
 
             <section class="bd-card" id="bd-chart" aria-label="Sales, last 7 days"></section>
 
@@ -65,6 +79,7 @@
 
   <script src="js/auth.js"></script>
   <script src="js/session.js"></script>
+  <script src="js/location.js"></script>
   <script src="js/products-store.js"></script>
   <script src="js/orders-store.js"></script>
   <script src="js/nav.js"></script>

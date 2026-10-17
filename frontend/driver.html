@@ -21,7 +21,7 @@
           <div class="bz-scroll">
             <header class="bz-head">
               <div>
-                <div class="bz-logo"><span class="biz">Biz</span><span class="link">Link</span></div>
+                <a class="bz-logo" href="index.html" aria-label="BizLink home"><img src="media/logo.png" alt="BizLink" class="bz-logo-image" /></a>
                 <div class="bz-tagline">Driver Centre</div>
               </div>
               <div class="bz-head-actions">
@@ -38,6 +38,7 @@
               <div class="bd-shopname"><b id="dv-name">Driver</b><span id="dv-sub">Delivery partner</span></div>
               <button type="button" class="bd-sw" id="dv-online" role="switch" aria-checked="false" aria-label="Online for deliveries"><i></i><span id="dv-online-lbl">Offline</span></button>
             </div>
+            <p id="dv-location-status" class="bd-location-status" aria-live="polite">Delivery jobs are grouped by the suburb and town in saved addresses.</p>
 
             <section class="dv-card" aria-label="Your vehicle">
               <div class="dv-ic"><svg class="ic"><use href="#i-bike"/></svg></div>
@@ -51,7 +52,7 @@
 
             <div id="dv-active"></div>
 
-            <div class="bd-sec" id="jobs"><h2>Available deliveries</h2><span class="bd-total" id="dv-jobcount"></span></div>
+            <div class="bd-sec" id="jobs"><h2>Available delivery batches</h2><span class="bd-total" id="dv-jobcount"></span></div>
             <div class="bd-list" id="dv-jobs"></div>
             <div class="bd-foot"></div>
           </div>
@@ -66,6 +67,7 @@
 
   <script src="js/auth.js"></script>
   <script src="js/session.js"></script>
+  <script src="js/location.js"></script>
   <script src="js/products-store.js"></script>
   <script src="js/orders-store.js"></script>
   <script src="js/nav.js"></script>

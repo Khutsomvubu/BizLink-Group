@@ -6,7 +6,7 @@
   const $ = id => document.getElementById(id);
 
   const TABS = {
-    new:       { states: ['placed'], title: 'No new orders', text: 'When a customer checks out with your products, the order lands here.' },
+    new:       { states: ['placed'], title: 'No new orders', text: 'Orders from customers and local shops appear here as soon as they check out.' },
     preparing: { states: ['accepted', 'preparing'], title: 'Nothing being prepared', text: 'Accepted orders show here until you mark them ready.' },
     ready:     { states: ['ready', 'at_shop'], title: 'Nothing waiting for pickup', text: 'Orders you’ve packed wait here until a driver collects them.' },
     done:      { states: ['picked_up', 'on_trip', 'arrived', 'delivered', 'declined', 'cancelled'], title: 'No completed orders yet', text: 'Orders handed to a driver, delivered, declined or cancelled are kept here.' }
@@ -50,7 +50,7 @@
     // after a move, follow the order to its next tab so the shop sees what happened
     render();
   });
-  U.watchNew(shop.email, o => { U.toast('New order #' + o.number); render(); });
+  U.watchNew(shop.email, o => { U.toast((o.isDemo ? 'New DEMO order #' : 'New order #') + o.number); render(); });
   window.addEventListener('storage', render);
   setInterval(render, 4000);
   render();

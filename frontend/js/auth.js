@@ -11,12 +11,12 @@
 
   // The six shops behind the 12 starter products. All use password123.
   const DEMO_SHOPS = [
-    { email: 'shop@example.com',      name: 'Kasi Essentials',   owner: 'Nomsa Zulu',      phone: '083 555 0101', address: '48 Vilakazi Street, Orlando West, Soweto' },
-    { email: 'ubuntu@example.com',    name: 'Ubuntu Suppliers',  owner: 'Themba Sithole',  phone: '083 555 0102', address: '9 Chris Hani Road, Diepkloof, Soweto' },
-    { email: 'mamsi@example.com',     name: "Mamsi's Tuckshop",  owner: 'Mamsi Dube',      phone: '083 555 0103', address: '22 Mooki Street, Orlando East, Soweto' },
-    { email: 'freshstop@example.com', name: 'FreshStop Local',   owner: 'Pule Maseko',     phone: '083 555 0104', address: '3 Nkomo Street, Pimville, Soweto' },
-    { email: 'homecare@example.com',  name: 'HomeCare Hub',      owner: 'Lindiwe Radebe',  phone: '083 555 0105', address: '17 Klipspruit Valley Road, Soweto' },
-    { email: 'edustation@example.com',name: 'EduStation',        owner: 'Sam Mokoena',     phone: '083 555 0106', address: '6 Maponya Mall Drive, Klipspruit, Soweto' }
+    { email: 'shop@example.com',      name: 'Kasi Essentials',   owner: 'Nomsa Zulu',      phone: '083 555 0101', address: '48 Vilakazi Street, Orlando West, Soweto', businessType: 'local-shop' },
+    { email: 'ubuntu@example.com',    name: 'Ubuntu Suppliers',  owner: 'Themba Sithole',  phone: '083 555 0102', address: '9 Chris Hani Road, Diepkloof, Soweto', businessType: 'supplier' },
+    { email: 'mamsi@example.com',     name: "Mamsi's Tuckshop",  owner: 'Mamsi Dube',      phone: '083 555 0103', address: '22 Mooki Street, Orlando East, Soweto', businessType: 'local-shop' },
+    { email: 'freshstop@example.com', name: 'FreshStop Local',   owner: 'Pule Maseko',     phone: '083 555 0104', address: '3 Nkomo Street, Pimville, Soweto', businessType: 'local-shop' },
+    { email: 'homecare@example.com',  name: 'HomeCare Hub',      owner: 'Lindiwe Radebe',  phone: '083 555 0105', address: '17 Klipspruit Valley Road, Soweto', businessType: 'local-shop' },
+    { email: 'edustation@example.com',name: 'EduStation',        owner: 'Sam Mokoena',     phone: '083 555 0106', address: '6 Maponya Mall Drive, Klipspruit, Soweto', businessType: 'local-shop' }
   ];
   const enc = new TextEncoder();
 
@@ -73,6 +73,11 @@
         name: u.name || '',
         accountType: ROLES.includes(u.accountType) ? u.accountType : 'customer',
         businessName: u.businessName || '',
+        businessType: ['local-shop', 'supplier'].includes(u.businessType)
+          ? u.businessType
+          : u.accountType === 'business'
+            ? ((DEMO_SHOPS.find(sh => sh.email === norm(email)) || {}).businessType || 'local-shop')
+            : '',
         vehicleType: u.vehicleType || '',
         plate: u.plate || '',
         initials: initialsFromName(u.name || email),
@@ -133,7 +138,7 @@
         // Demo shops (own the 12 starter products) and one demo driver. Password: password123
         if (!localStorage.getItem(SEEDED2)) {
           for (const sh of DEMO_SHOPS) {
-            await this.register(sh.email, 'password123', { name: sh.owner, accountType: 'business', businessName: sh.name, phone: sh.phone, address: sh.address, demo: true });
+            await this.register(sh.email, 'password123', { name: sh.owner, accountType: 'business', businessName: sh.name, businessType: sh.businessType, phone: sh.phone, address: sh.address, demo: true });
           }
           await this.register('driver@example.com', 'password123', { name: 'Sipho Dlamini', accountType: 'delivery', vehicleType: 'Scooter', plate: 'GP 48 21 TR', phone: '071 555 0142', address: '5 Mofokeng Street, Meadowlands, Soweto', demo: true });
           localStorage.setItem(SEEDED2, '1');
