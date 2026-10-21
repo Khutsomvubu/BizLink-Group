@@ -29,6 +29,39 @@
   }
   function openSheet(id) { $(id).classList.remove('hidden'); }
   function closeSheet(id) { $(id).classList.add('hidden'); }
+  function openPoolDialog() {
+    const info = BizOrders.routePoolInfo(session.email, user.address, cart);
+    const quote = info.quote;
+    const date = new Date(info.date + 'T12:00:00');
+    const dateLabel = date.toLocaleDateString('en-ZA', { weekday: 'long', day: 'numeric', month: 'long' });
+    $('pool-month').textContent = date.toLocaleDateString('en-ZA', { month: 'short' }).toUpperCase();
+    $('pool-day').textContent = date.toLocaleDateString('en-ZA', { day: 'numeric' });
+    $('pool-date-label').textContent = dateLabel;
+    $('pool-area').textContent = info.area || 'Nearby area';
+    $('pool-order-summary').textContent = cart.length + (cart.length === 1 ? ' item' : ' items') + ' · ' + money(cartTotal());
+    const discountMessage = quote.discountPercent
+      ? quote.discountPercent + '% off delivery for ordering from ' + quote.shopCount + ' suppliers.'
+      : 'Order from 2 suppliers to get 10% off delivery; 3 suppliers get 20%, and 4 or more get 30%.';
+    $('pool-description').textContent = info.nearbyBusinesses
+      ? info.nearbyBusinesses + ' nearby ' + (info.nearbyBusinesses === 1 ? 'business has' : 'businesses have') + ' joined a supplier route for today. ' + discountMessage
+      : 'Share a supplier route with nearby local shops. ' + discountMessage;
+    $('pool-delivery-before').textContent = money(quote.standardFee);
+    $('pool-delivery-discount').textContent = quote.deliveryDiscount
+      ? quote.discountPercent + '% · −' + money(quote.deliveryDiscount)
+      : 'Add another supplier for a discount';
+    $('pool-delivery-after').textContent = money(quote.deliveryFee);
+    $('pool-estimated-total').textContent = money(quote.total);
+    $('pool-join').textContent = quote.deliveryDiscount
+      ? 'Join route & save ' + money(quote.deliveryDiscount)
+      : 'Join route';
+    closeSheet('cart-panel');
+    $('pool-dialog').classList.remove('hidden');
+    $('pool-join').focus();
+  }
+  function closePoolDialog() {
+    $('pool-dialog').classList.add('hidden');
+    openCart();
+  }
 
   /* ---------- storage ---------- */
   const CART_KEY = isLocalShop ? 'bizlink_supplier_cart_' + session.email : 'bizlink_cart';
@@ -64,9 +97,6 @@
     const buyable = open && state !== 'out';
     const label = !open ? 'Shop closed' : BizProducts.stockText(p);
     const cls = !open || state === 'out' ? 'out' : state === 'low' ? 'low' : '';
-    const rating = p.ratings > 0
-      ? `<svg class="ic"><use href="#i-star"/></svg><b>${Number(p.rating).toFixed(1)}</b><span>(${p.ratings})</span>`
-      : '<b style="color:#047857">New</b>';
     const nearby = window.BizLocation && BizLocation.areaRank(user.address, seller.address) === 0
         ? 'Same suburb'
         : window.BizLocation && BizLocation.areaRank(user.address, seller.address) === 1
@@ -82,12 +112,11 @@
           <button type="button" class="bz-fav" aria-pressed="${favs.includes(p.id) ? 'true' : 'false'}" aria-label="Save ${esc(p.name)}"><svg class="ic"><use href="#i-heart"/></svg></button>
         </div>`;
     return `
-            <article class="bz-card product-card" data-id="${esc(p.id)}" data-name="${esc(p.name)}" data-vendor="${esc(p.vendor)}" data-category="${esc(p.category)}" data-price="${p.price}" data-rating="${p.rating || 0}" data-stock="${buyable ? state : 'out'}">
+            <article class="bz-card product-card" data-id="${esc(p.id)}" data-name="${esc(p.name)}" data-vendor="${esc(p.vendor)}" data-category="${esc(p.category)}" data-price="${p.price}" data-stock="${buyable ? state : 'out'}">
               ${visual}
               <h3 class="bz-name">${esc(p.name)}</h3>
               <p class="bz-vendor">${esc(p.vendor)}</p>
               ${nearby ? `<p class="bz-nearby">${esc(nearby)}</p>` : ''}
-              <div class="bz-rating">${rating}</div>
               <div class="bz-foot">
                 <div><div class="bz-price">${money(p.price)}</div><div class="bz-stock ${cls}">${esc(label)}</div></div>
                 <button type="button" class="add-cart bz-add"${buyable ? '' : ' disabled'}><svg class="ic"><use href="#i-cart"/></svg><span>${isLocalShop ? 'Order' : 'Add'}</span></button>
@@ -108,7 +137,7 @@
   }
 
   /* ---------- filter / sort / search state ---------- */
-  const state = { cat: 'All', q: '', sort: 'recommended', inStock: false, minRating: 0, maxPrice: 0 };
+  const state = { cat: 'All', q: '', sort: 'recommended', inStock: false, maxPrice: 0 };
 
   function applyAll() {
     const q = state.q.toLowerCase().trim();
@@ -119,7 +148,6 @@
         (state.cat === 'All' || d.category === state.cat) &&
         (!q || d.name.toLowerCase().includes(q) || d.vendor.toLowerCase().includes(q)) &&
         (!state.inStock || d.stock !== 'out') &&
-        (parseFloat(d.rating) >= state.minRating) &&
         (!state.maxPrice || parseFloat(d.price) < state.maxPrice);
       card.hidden = !ok;
       if (ok) shown++;
@@ -129,13 +157,12 @@
       recommended: (a, b) => a.dataset.order - b.dataset.order,
       'price-asc': (a, b) => a.dataset.price - b.dataset.price,
       'price-desc': (a, b) => b.dataset.price - a.dataset.price,
-      rating: (a, b) => b.dataset.rating - a.dataset.rating,
       name: (a, b) => a.dataset.name.localeCompare(b.dataset.name)
     }[state.sort];
     cards.slice().sort(by).forEach(c => grid.appendChild(c));
 
     $('empty-state').classList.toggle('hidden', shown > 0);
-    $('filter-btn').classList.toggle('on', state.inStock || state.minRating > 0 || state.maxPrice > 0);
+    $('filter-btn').classList.toggle('on', state.inStock || state.maxPrice > 0);
     $('sort-btn').classList.toggle('on', state.sort !== 'recommended');
   }
 
@@ -165,18 +192,17 @@
       state[key] = parseFloat(b.dataset.v);
     });
   }
-  pickOne('f-rating', 'minRating');
   pickOne('f-price', 'maxPrice');
   $('f-stock').addEventListener('change', e => { state.inStock = e.target.checked; });
 
   function syncFilterUI() {
     $('f-stock').checked = state.inStock;
-    [['f-rating', state.minRating], ['f-price', state.maxPrice]].forEach(([id, val]) => {
+    [['f-price', state.maxPrice]].forEach(([id, val]) => {
       $(id).querySelectorAll('.bz-opt').forEach(o => o.classList.toggle('active', parseFloat(o.dataset.v) === val));
     });
   }
   function resetFilters() {
-    state.inStock = false; state.minRating = 0; state.maxPrice = 0;
+    state.inStock = false; state.maxPrice = 0;
     syncFilterUI();
   }
   $('filter-btn').addEventListener('click', () => openSheet('filter-sheet'));
@@ -240,7 +266,12 @@
           <button type="button" data-inc="${esc(i.id)}" aria-label="Add one">+</button>
         </div>
       </div>`).join('');
-    $('cart-total').textContent = money(cartTotal());
+    const quote = BizOrders.deliveryQuote(cart, !isLocalShop);
+    $('cart-subtotal').textContent = money(cartTotal());
+    $('cart-delivery').textContent = money(quote.standardFee);
+    $('cart-savings').textContent = '−' + money(quote.deliveryDiscount);
+    $('cart-savings-row').classList.toggle('hidden', quote.deliveryDiscount === 0);
+    $('cart-total').textContent = money(quote.total);
 
     const addr = user.address || '';
     const shopsInCart = new Set(cart.map(i => { const p = BizProducts.get(i.id); return p ? p.shopEmail : ''; })).size;
@@ -305,11 +336,12 @@
     renderCart();
   });
 
-  $('checkout-btn').addEventListener('click', () => {
+  function placeOrder(joinRoutePool) {
     if (!cart.length) return;
     const user = (window.BizAuth && BizAuth.getUser(session.email)) || session;
     if (!user.address) {
       closeSheet('cart-panel');
+      $('pool-dialog').classList.add('hidden');
       toast('Add your delivery address first');
       setTimeout(() => { location.href = 'profile.html'; }, 1300);
       return;
@@ -321,21 +353,49 @@
       businessType: user.businessType,
       address: user.address,
       phone: user.phone
-    });
+    }, joinRoutePool);
     if (res.error) {
+      $('pool-dialog').classList.add('hidden');
       toast(res.error);
       renderProducts(); applyAll();
+      if (isLocalShop) openCart();
       return;
     }
     cart = [];
     cartChanged();
     closeSheet('cart-panel');
+    $('pool-dialog').classList.add('hidden');
     const first = res.orders[0];
     toast(isLocalShop
-      ? (res.orders.length > 1 ? res.orders.length + ' supplier orders placed' : 'Supplier order #' + first.number + ' placed!')
+      ? (joinRoutePool ? 'Joined the shared supplier route · ' : '') + (res.orders.length > 1 ? res.orders.length + ' supplier orders placed' : 'Supplier order #' + first.number + ' placed!')
       : (res.orders.length > 1 ? res.orders.length + ' orders placed (one per shop)' : 'Order #' + first.number + ' placed!'));
     const ordersPage = isLocalShop ? 'business-purchases.html' : 'orders.html';
+    const saved = res.deliveryDiscount ? ' · saved ' + money(res.deliveryDiscount) + ' on delivery' : '';
+    if (saved) toast((isLocalShop ? 'Supplier order placed' : 'Order placed') + saved);
     setTimeout(() => { location.href = ordersPage + '#' + first.number; }, 1000);
+  }
+
+  $('checkout-btn').addEventListener('click', () => {
+    if (isLocalShop) {
+      if (!user.address) {
+        closeSheet('cart-panel');
+        toast('Add your delivery address first');
+        setTimeout(() => { location.href = 'profile.html'; }, 1300);
+        return;
+      }
+      openPoolDialog();
+      return;
+    }
+    placeOrder(false);
+  });
+  $('pool-join').addEventListener('click', () => placeOrder(true));
+  $('pool-skip').addEventListener('click', () => placeOrder(false));
+  $('pool-close').addEventListener('click', closePoolDialog);
+  $('pool-dialog').addEventListener('click', e => {
+    if (e.target === $('pool-dialog')) closePoolDialog();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !$('pool-dialog').classList.contains('hidden')) closePoolDialog();
   });
 
   /* ---------- init ---------- */

@@ -46,8 +46,22 @@
   });
   window.addEventListener('hashchange', () => { if (TABS[location.hash.slice(1)]) { tab = location.hash.slice(1); render(); } });
 
-  U.bindActions($('bo-list'), shop.email, () => {
-    // after a move, follow the order to its next tab so the shop sees what happened
+  U.bindActions($('bo-list'), shop.email, (action, number, changed) => {
+    if (!changed) {
+      render();
+      return;
+    }
+    const nextTab = {
+      accept: 'preparing',
+      prepare: 'preparing',
+      ready: 'ready',
+      decline: 'done',
+      handoff: 'done'
+    }[action];
+    if (nextTab) {
+      tab = nextTab;
+      history.replaceState(null, '', '#' + tab);
+    }
     render();
   });
   U.watchNew(shop.email, o => { U.toast((o.isDemo ? 'New DEMO order #' : 'New order #') + o.number); render(); });

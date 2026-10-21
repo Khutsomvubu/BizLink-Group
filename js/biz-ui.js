@@ -114,7 +114,10 @@
         ? '<div class="bo-note teal"><div>Being prepared automatically. It will soon be ready for pickup.</div></div>'
         : `<div class="bo-actions"><button type="button" class="bz-btn primary" data-act="ready" data-num="${n}">Mark as ready</button></div>`;
     } else if (o.state === 'ready') {
-      foot = `<div class="bo-note teal"><svg class="ic"><use href="#i-bike"/></svg><div>${o.driverEmail ? `<b>${esc(driverName(o))}</b> is coming to collect this.` : 'Packed and waiting for a driver to take it.'}</div></div>`;
+      const next = o.driverEmail
+        ? `The order stays Ready until the driver confirms arrival. Then confirm the handoff here.`
+        : 'Next: a driver must go Online and accept this from Jobs. The handoff button appears here after the driver confirms arrival.';
+      foot = `<div class="bo-note teal"><svg class="ic"><use href="#i-bike"/></svg><div>${o.driverEmail ? `<b>${esc(driverName(o))}</b> accepted this delivery. ` : ''}${next}</div></div>`;
     } else if (o.state === 'at_shop') {
       const awaitingHandoff = BizOrders.batchAwaitingShop(o.number, o.shopEmail);
       const batch = o.batchId && BizOrders.batchForOrder(o.number);
@@ -151,10 +154,11 @@
       if (!b || !root.contains(b)) return;
       const num = b.dataset.num, act = b.dataset.act;
       if (act === 'handoff') {
-        toast(BizOrders.confirmShopHandoff(b.dataset.batch, email)
+        const changed = BizOrders.confirmShopHandoff(b.dataset.batch, email);
+        toast(changed
           ? 'Handoff confirmed — the driver can continue'
           : 'This handoff has changed — refreshed');
-        after();
+        after(act, num, changed);
         return;
       }
       if (act === 'decline') {
@@ -162,15 +166,20 @@
           title: 'Decline order #' + num + '?',
           text: 'The customer will see it as cancelled and the items go back into your stock.',
           yes: 'Decline order', danger: true,
-          onYes() { toast(BizOrders.shopDecline(num, email) ? 'Order #' + num + ' declined' : 'This order can no longer be declined'); after(); }
+          onYes() {
+            const changed = BizOrders.shopDecline(num, email);
+            toast(changed ? 'Order #' + num + ' declined' : 'This order can no longer be declined');
+            after(act, num, changed);
+          }
         });
         return;
       }
       const run = { accept: 'shopAccept', prepare: 'shopStartPreparing', ready: 'shopReady' }[act];
       const msg = { accept: 'accepted', prepare: 'is being prepared', ready: 'is ready for a driver' }[act];
       if (!run) return;
-      toast(BizOrders[run](num, email) ? 'Order #' + num + ' ' + msg : 'This order has changed — refreshed');
-      after();
+      const changed = BizOrders[run](num, email);
+      toast(changed ? 'Order #' + num + ' ' + msg : 'This order has changed — refreshed');
+      after(act, num, changed);
     });
   }
 

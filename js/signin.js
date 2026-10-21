@@ -15,6 +15,18 @@
   const qEmail = new URLSearchParams(location.search).get('email');
   if (qEmail) $('signin-email').value = qEmail;
 
+  document.querySelectorAll('[data-demo-email]').forEach(button => {
+    button.addEventListener('click', () => {
+      $('signin-email').value = button.dataset.demoEmail;
+      $('signin-password').value = 'password123';
+      document.querySelectorAll('[data-demo-email]').forEach(profile => {
+        profile.setAttribute('aria-pressed', profile === button ? 'true' : 'false');
+      });
+      $('signin-toast').className = 'text-xs rounded-xl px-3 py-2 mb-3 bg-blue-50 text-blue-700 border border-blue-200';
+      $('signin-toast').textContent = 'Demo login filled in. Select Sign In to continue.';
+    });
+  });
+
   $('toggle-pw').addEventListener('click', () => {
     const input = $('signin-password');
     const show = input.type === 'password';

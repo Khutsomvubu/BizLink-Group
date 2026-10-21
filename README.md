@@ -66,13 +66,14 @@ Edit EmailJS keys in `js/config.js` for password-reset emails.
 ## Orders
 
 Checkout saves a real order (per account). Orders.html shows Active / Past, a tracking timeline, cancel (while Placed/Confirmed) and Order again.
-Status, driver position, minutes left, delays and driver chat replies are all SIMULATED from elapsed time (no backend yet).
-- `DEMO` in `js/orders-store.js`: `true` = whole delivery ~3 min, `false` = realistic (~31 min).
-- Every 3rd order number (e.g. BL-1044, BL-1047) is delayed, so you can see the "Running late" banner.
+Status, driver position, time remaining and driver chat replies are SIMULATED from elapsed time (no backend yet).
+- `DEMO` in `js/orders-store.js`: `true` = whole delivery ~30 s, `false` = realistic (~31 min).
+- Demo orders do not simulate traffic delays or show a "Running late" warning.
 - Phone numbers are placeholders: `SUPPORT_PHONE` and the `DRIVERS` list in `js/orders-store.js`.
 - Live tracker: "Out for delivery" shows a drawn map with the driver moving along the route, minutes left and km away.
 - Driver card: Call (dials on a phone, shows the number on desktop) and Message (in-app chat with quick replies).
 - Help: call support or report a problem (reason + note) → complaint reference like CMP-2031.
+- Checkout estimates delivery at R20 per shop. When multiple distinct shops/suppliers are in one pooled checkout, 2 shops get 10% off delivery, 3 get 20%, and 4+ get 30%; product prices and driver commission are unchanged. Local shops can opt into a shared supplier route at checkout. Same-day opt-ins for the same supplier and nearby area are discoverable by other businesses and can be combined by nearby delivery batching. Fees and discounts are demo estimates only; no payment is collected.
 
 ## Roles (layer 1)
 
@@ -87,9 +88,13 @@ Sign-up asks "I am a…" first. Extra fields: **Business name** (businesses), **
 `BizSession.requireRole(role)` guards each page: a driver who opens `browse.html` is sent to `driver.html`. Profile is shared.
 
 Demo accounts (all password `password123`):
-- Customer `you@example.com`
-- Driver `driver@example.com`
-- Shops (own the 12 starter products): `shop@example.com` (Kasi Essentials), `ubuntu@`, `mamsi@`, `freshstop@`, `homecare@`, `edustation@` + `example.com`
+- Customer: `you@example.com`
+- Driver: `driver@example.com` (Sipho Dlamini)
+- Local shop: `shop@example.com` (Kasi Essentials)
+- Supplier: `ubuntu@example.com` (Ubuntu Suppliers)
+- Additional local shops: `mamsi@example.com`, `freshstop@example.com`, `homecare@example.com`, `edustation@example.com`
+
+The sign-in page has a **Try a demo profile** section that fills in the customer, driver, local-shop, or supplier credentials. Demo profiles are restored individually if missing, without replacing existing accounts or their passwords.
 
 ## Connected data
 

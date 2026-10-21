@@ -8,6 +8,23 @@
   const SEEDED2 = 'bizlink_seeded_roles';
   const ITER = 150000;
   const ROLES = ['customer', 'business', 'delivery'];
+  const DEMO_PASSWORD = 'password123';
+  const DEMO_CUSTOMER = {
+    email: 'you@example.com',
+    name: 'Mpho Ramarumo',
+    accountType: 'customer',
+    phone: '082 123 4567',
+    address: '12 Vilakazi Street, Orlando West, Soweto'
+  };
+  const DEMO_DRIVER = {
+    email: 'driver@example.com',
+    name: 'Sipho Dlamini',
+    accountType: 'delivery',
+    vehicleType: 'Scooter',
+    plate: 'GP 48 21 TR',
+    phone: '071 555 0142',
+    address: '5 Mofokeng Street, Meadowlands, Soweto'
+  };
 
   // The six shops behind the 12 starter products. All use password123.
   const DEMO_SHOPS = [
@@ -131,18 +148,27 @@
     async seedDemo() {
       try {
         if (!this.supported()) return;
-        if (!localStorage.getItem(SEEDED)) {
-          await this.register('you@example.com', 'password123', { name: 'Mpho Ramarumo', accountType: 'customer', phone: '082 123 4567', address: '12 Vilakazi Street, Orlando West, Soweto', demo: true });
-          localStorage.setItem(SEEDED, '1');
+        if (!this.exists(DEMO_CUSTOMER.email)) {
+          await this.register(DEMO_CUSTOMER.email, DEMO_PASSWORD, Object.assign({}, DEMO_CUSTOMER, { demo: true }));
         }
-        // Demo shops (own the 12 starter products) and one demo driver. Password: password123
-        if (!localStorage.getItem(SEEDED2)) {
-          for (const sh of DEMO_SHOPS) {
-            await this.register(sh.email, 'password123', { name: sh.owner, accountType: 'business', businessName: sh.name, businessType: sh.businessType, phone: sh.phone, address: sh.address, demo: true });
+        for (const sh of DEMO_SHOPS) {
+          if (!this.exists(sh.email)) {
+            await this.register(sh.email, DEMO_PASSWORD, {
+              name: sh.owner,
+              accountType: 'business',
+              businessName: sh.name,
+              businessType: sh.businessType,
+              phone: sh.phone,
+              address: sh.address,
+              demo: true
+            });
           }
-          await this.register('driver@example.com', 'password123', { name: 'Sipho Dlamini', accountType: 'delivery', vehicleType: 'Scooter', plate: 'GP 48 21 TR', phone: '071 555 0142', address: '5 Mofokeng Street, Meadowlands, Soweto', demo: true });
-          localStorage.setItem(SEEDED2, '1');
         }
+        if (!this.exists(DEMO_DRIVER.email)) {
+          await this.register(DEMO_DRIVER.email, DEMO_PASSWORD, Object.assign({}, DEMO_DRIVER, { demo: true }));
+        }
+        localStorage.setItem(SEEDED, '1');
+        localStorage.setItem(SEEDED2, '1');
       } catch (e) { /* storage blocked */ }
     }
   };

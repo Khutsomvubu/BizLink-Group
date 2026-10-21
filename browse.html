@@ -22,7 +22,7 @@
             <!-- Header -->
             <header class="bz-head">
               <div>
-                <a class="bz-logo" href="index.html" aria-label="BizLink home"><img src="media/logo.png" alt="BizLink" class="bz-logo-image" /></a>
+                <a class="bz-logo" href="index.html" aria-label="BizLink home"><img src="media/logo2.png" alt="BizLink" class="bz-logo-image" /></a>
                 <div class="bz-tagline" id="browse-tagline">Local business. Connected.</div>
               </div>
               <div class="bz-head-actions">
@@ -98,12 +98,6 @@
             <div class="bz-sheet-grab"></div>
             <div class="bz-sheet-head"><h2>Filter</h2><button type="button" class="bz-iconbtn" data-close="filter-sheet" aria-label="Close"><svg class="ic"><use href="#i-close"/></svg></button></div>
             <label class="bz-switch"><span>In stock only</span><input type="checkbox" id="f-stock" /></label>
-            <h3>Minimum rating</h3>
-            <div class="bz-opts" id="f-rating">
-              <button type="button" class="bz-opt active" data-v="0">Any</button>
-              <button type="button" class="bz-opt" data-v="4">4.0+</button>
-              <button type="button" class="bz-opt" data-v="4.5">4.5+</button>
-            </div>
             <h3>Price</h3>
             <div class="bz-opts" id="f-price">
               <button type="button" class="bz-opt active" data-v="0">Any</button>
@@ -127,7 +121,6 @@
               <button type="button" data-sort="recommended" class="active">Recommended<svg class="ic"><use href="#i-check"/></svg></button>
               <button type="button" data-sort="price-asc">Price: low to high<svg class="ic"><use href="#i-check"/></svg></button>
               <button type="button" data-sort="price-desc">Price: high to low<svg class="ic"><use href="#i-check"/></svg></button>
-              <button type="button" data-sort="rating">Top rated<svg class="ic"><use href="#i-check"/></svg></button>
               <button type="button" data-sort="name">Name: A to Z<svg class="ic"><use href="#i-check"/></svg></button>
             </div>
           </div>
@@ -140,11 +133,41 @@
             <div class="bz-sheet-head"><h2>Your cart</h2><button type="button" id="cart-close" class="bz-iconbtn" aria-label="Close cart"><svg class="ic"><use href="#i-close"/></svg></button></div>
             <div id="cart-list"></div>
             <div id="cart-footer">
+              <div class="bz-cart-cost"><span>Products</span><b id="cart-subtotal">R0.00</b></div>
+              <div class="bz-cart-cost"><span>Delivery before discount</span><b id="cart-delivery">R0.00</b></div>
+              <div class="bz-cart-cost savings hidden" id="cart-savings-row"><span>Pooling discount</span><b id="cart-savings">−R0.00</b></div>
               <div class="bz-cart-total"><span>Total</span><span id="cart-total">R0.00</span></div>
               <div class="bz-deliver"><svg class="ic"><use href="#i-pin"/></svg><div id="deliver-to"></div></div>
               <div class="bz-sheet-actions"><button type="button" id="checkout-btn" class="bz-btn primary">Checkout</button></div>
             </div>
           </div>
+        </div>
+
+        <div id="pool-dialog" class="pool-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pool-title">
+          <section class="pool-dialog">
+            <div class="pool-dialog-head">
+              <div><span class="pool-eyebrow">DELIVERY OPTION</span><h2 id="pool-title">Join a supplier route?</h2></div>
+              <button type="button" id="pool-close" class="pool-close">Close</button>
+            </div>
+            <div class="pool-route">
+              <div class="pool-date" aria-hidden="true"><span id="pool-month"></span><b id="pool-day"></b></div>
+              <div><span class="pool-route-label">NEXT SUPPLIER ROUTE</span><b id="pool-date-label"></b><small id="pool-area"></small></div>
+            </div>
+            <p id="pool-description" class="pool-description"></p>
+            <div class="pool-benefits">
+              <div><span>Order</span><b id="pool-order-summary"></b></div>
+              <div><span>Route pooling</span><b>Share the delivery route</b></div>
+              <div><span>Delivery before discount</span><b id="pool-delivery-before"></b></div>
+              <div><span>Pooling discount</span><b id="pool-delivery-discount"></b></div>
+              <div><span>Delivery after discount</span><b id="pool-delivery-after"></b></div>
+              <div><span>Estimated total</span><b id="pool-estimated-total"></b></div>
+            </div>
+            <p class="pool-disclaimer">Discount tiers count distinct suppliers in this checkout: 2 = 10%, 3 = 20%, 4+ = 30%. Demo estimate only; no payment is collected. Product prices are unchanged.</p>
+            <div class="pool-actions">
+              <button type="button" id="pool-join" class="bz-btn primary">Join route &amp; save</button>
+              <button type="button" id="pool-skip" class="bz-btn ghost">Continue without pooling</button>
+            </div>
+          </section>
         </div>
 
         <div id="toast" class="bz-toast hidden" role="status"></div>

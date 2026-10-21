@@ -31,20 +31,20 @@
   const norm = e => String(e || '').trim().toLowerCase();
 
   /* ---------- starter catalogue (the original 12 Browse products) ---------- */
-  // [id, name, shop email, category, price, rating, ratings, stock, c1, c2, shape, brand, sub, size]
+  // [id, name, shop email, category, price, stock, c1, c2, shape, brand, sub, size]
   const SEED = [
-    ['p1',  'Iwisa Super Maize Meal 10kg',        'ubuntu@example.com',     'Groceries',     119.99, 4.8, 120, 40, '#fde7a8', '#d9831f', 'bag',    'IWISA',     'MAIZE MEAL',          '10kg'],
-    ['p2',  'Sunfoil Cooking Oil 2L',             'shop@example.com',       'Groceries',      64.99, 4.6,  85, 30, '#fca5a5', '#ef4444', 'bottle', 'SUNFOIL',   'COOKING OIL',         '2L'],
-    ['p3',  'Coca-Cola Original 500ml (6 Pack)',  'mamsi@example.com',      'Drinks',         69.99, 4.7, 210, 60, '#f87171', '#b91c1c', 'bottle', 'Coca-Cola', 'ORIGINAL',            '6 × 500ml'],
-    ['p4',  'Sasko Brown Bread 700g',             'freshstop@example.com',  'Groceries',      16.99, 4.5,  64,  6, '#f6b445', '#b45309', 'bag',    'SASKO',     'BROWN BREAD',         '700g'],
-    ['p5',  'Skip Washing Powder 2kg',            'homecare@example.com',   'Household',      54.99, 4.4,  97, 25, '#93c5fd', '#1d4ed8', 'box',    'SKIP',      'WASHING POWDER',      '2kg'],
-    ['p6',  'BIC Pens (10 Pack)',                 'edustation@example.com', 'Stationery',     27.99, 4.3,  41, 50, '#86efac', '#059669', 'box',    'BIC',       'BALLPOINT PENS',      '10 pack'],
-    ['p7',  'Sunlight Dishwashing Liquid 750ml',  'homecare@example.com',   'Household',      29.99, 4.5,  73, 35, '#fde047', '#65a30d', 'bottle', 'SUNLIGHT',  'DISH LIQUID',         '750ml'],
-    ['p8',  'Lux Soap Bar 175g (3 Pack)',         'shop@example.com',       'Personal Care',  32.99, 4.6,  58,  4, '#f9a8d4', '#9333ea', 'box',    'LUX',       'SOFT TOUCH SOAP',     '3 × 175g'],
-    ['p9',  'Colgate Toothpaste 100ml',           'ubuntu@example.com',     'Personal Care',  22.99, 4.7, 132, 45, '#fca5a5', '#be123c', 'box',    'COLGATE',   'TOTAL PROTECTION',    '100ml'],
-    ['p10', 'Fanta Orange 2L',                    'mamsi@example.com',      'Drinks',         24.99, 4.4,  52,  0, '#fdba74', '#ea580c', 'bottle', 'FANTA',     'ORANGE',              '2L'],
-    ['p11', 'Tastic Long Grain Rice 2kg',         'ubuntu@example.com',     'Groceries',      42.99, 4.6,  88, 38, '#fde68a', '#0f766e', 'bag',    'TASTIC',    'LONG GRAIN RICE',     '2kg'],
-    ['p12', 'Koo Baked Beans 410g',               'freshstop@example.com',  'Groceries',      19.99, 4.5,  67, 55, '#fdba74', '#c2410c', 'box',    'KOO',       'BAKED BEANS',         '410g']
+    ['p1',  'Iwisa Super Maize Meal 10kg',        'ubuntu@example.com',     'Groceries',     119.99, 40, '#fde7a8', '#d9831f', 'bag',    'IWISA',     'MAIZE MEAL',          '10kg'],
+    ['p2',  'Sunfoil Cooking Oil 2L',             'shop@example.com',       'Groceries',      64.99, 30, '#fca5a5', '#ef4444', 'bottle', 'SUNFOIL',   'COOKING OIL',         '2L'],
+    ['p3',  'Coca-Cola Original 500ml (6 Pack)',  'mamsi@example.com',      'Drinks',         69.99, 60, '#f87171', '#b91c1c', 'bottle', 'Coca-Cola', 'ORIGINAL',            '6 × 500ml'],
+    ['p4',  'Sasko Brown Bread 700g',             'freshstop@example.com',  'Groceries',      16.99,  6, '#f6b445', '#b45309', 'bag',    'SASKO',     'BROWN BREAD',         '700g'],
+    ['p5',  'Skip Washing Powder 2kg',            'homecare@example.com',   'Household',      54.99, 25, '#93c5fd', '#1d4ed8', 'box',    'SKIP',      'WASHING POWDER',      '2kg'],
+    ['p6',  'BIC Pens (10 Pack)',                 'edustation@example.com','Stationery',     27.99, 50, '#86efac', '#059669', 'box',    'BIC',       'BALLPOINT PENS',      '10 pack'],
+    ['p7',  'Sunlight Dishwashing Liquid 750ml',  'homecare@example.com',   'Household',      29.99, 35, '#fde047', '#65a30d', 'bottle', 'SUNLIGHT',  'DISH LIQUID',         '750ml'],
+    ['p8',  'Lux Soap Bar 175g (3 Pack)',         'shop@example.com',       'Personal Care',  32.99,  4, '#f9a8d4', '#9333ea', 'box',    'LUX',       'SOFT TOUCH SOAP',     '3 × 175g'],
+    ['p9',  'Colgate Toothpaste 100ml',           'ubuntu@example.com',     'Personal Care',  22.99, 45, '#fca5a5', '#be123c', 'box',    'COLGATE',   'TOTAL PROTECTION',    '100ml'],
+    ['p10', 'Fanta Orange 2L',                    'mamsi@example.com',      'Drinks',         24.99,  0, '#fdba74', '#ea580c', 'bottle', 'FANTA',     'ORANGE',              '2L'],
+    ['p11', 'Tastic Long Grain Rice 2kg',         'ubuntu@example.com',     'Groceries',      42.99, 38, '#fde68a', '#0f766e', 'bag',    'TASTIC',    'LONG GRAIN RICE',     '2kg'],
+    ['p12', 'Koo Baked Beans 410g',               'freshstop@example.com',  'Groceries',      19.99, 55, '#fdba74', '#c2410c', 'box',    'KOO',       'BAKED BEANS',         '410g']
   ];
 
   const PRODUCT_IMAGES = {
@@ -68,9 +68,9 @@
     const nameOf = e => (shops.find(s => s.email === e) || {}).name || '';
     const list = SEED.map(r => ({
       id: r[0], shopEmail: r[2], vendor: nameOf(r[2]), name: r[1], category: r[3],
-      price: r[4], stock: r[7], inStock: r[7] > 0, rating: r[5], ratings: r[6],
+      price: r[4], stock: r[5], inStock: r[5] > 0,
       image: PRODUCT_IMAGES[r[1]] || '',
-      tile: { c1: r[8], c2: r[9], shape: r[10], brand: r[11], sub: r[12], size: r[13] },
+      tile: { c1: r[6], c2: r[7], shape: r[8], brand: r[9], sub: r[10], size: r[11] },
       createdAt: 0
     }));
     // keep anything a business already added before seeding ran
@@ -151,7 +151,7 @@
         id: 'p' + n, shopEmail: norm(shop.email), vendor: shop.businessName || '',
         name: f.name.trim(), category: f.category, price: round2(f.price),
         stock: Math.floor(Number(f.stock)), inStock: f.inStock !== false && Number(f.stock) > 0,
-        rating: 0, ratings: 0, image: PRODUCT_IMAGES[f.name.trim()] || '', tile: null, createdAt: Date.now()
+        image: PRODUCT_IMAGES[f.name.trim()] || '', tile: null, createdAt: Date.now()
       };
       list.push(p);
       write(PKEY, list);

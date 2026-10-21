@@ -6,7 +6,7 @@
    and delays. Supplier purchases follow the shared business/driver state.
    When a real API exists, replace stageIndex() / live() with server data.
 
-   DEMO = true  → whole delivery takes 60 s (65 s if delayed) so you can watch it
+   DEMO = true  → whole delivery takes 30 s so you can watch it
    DEMO = false → realistic timings (~31 min)
 
    CONNECTED (layer 1): orders now live in ONE shared list, so the shop and
@@ -27,9 +27,9 @@
   const SUPPORT_PHONE = '0800 000 000';
 
   // Time spent in: Placed, Confirmed, Being prepared, Out for delivery
-  const DUR = DEMO ? [10e3, 10e3, 10e3, 30e3] : [2 * 60e3, 4 * 60e3, 10 * 60e3, 15 * 60e3];
-  // Extra time a "delayed" order spends stuck in traffic (every 3rd order number)
-  const DELAY = DEMO ? 5e3 : 8 * 60e3;
+  const DUR = DEMO ? [5e3, 5e3, 5e3, 15e3] : [2 * 60e3, 4 * 60e3, 10 * 60e3, 15 * 60e3];
+  const DELAY = 0;
+  const DELIVERY_FEE_PER_SHOP = 20;
 
   const STAGES = [
     { key: 'placed',    pill: 'Placed',           label: 'Order placed',     desc: 'We’ve received your order.' },
@@ -41,10 +41,10 @@
   const LAST = STAGES.length - 1;
 
   const DRIVERS = [
-    { name: 'Sipho Dlamini',   rating: 4.9, vehicle: 'Honda Wave scooter',  plate: 'GP 48 21 TR', phone: '071 555 0142' },
-    { name: 'Thandi Mokoena',  rating: 4.8, vehicle: 'Yamaha Crypton',      plate: 'GP 77 03 BZ', phone: '072 555 0187' },
-    { name: 'Lerato Khumalo', rating: 4.7, vehicle: 'Suzuki Address',      plate: 'GP 19 66 KL', phone: '073 555 0119' },
-    { name: 'Bongani Nkosi',   rating: 4.9, vehicle: 'Bajaj Boxer',         plate: 'GP 52 90 MV', phone: '074 555 0163' }
+    { name: 'Sipho Dlamini',   vehicle: 'Honda Wave scooter',  plate: 'GP 48 21 TR', phone: '071 555 0142' },
+    { name: 'Thandi Mokoena',  vehicle: 'Yamaha Crypton',      plate: 'GP 77 03 BZ', phone: '072 555 0187' },
+    { name: 'Lerato Khumalo', vehicle: 'Suzuki Address',      plate: 'GP 19 66 KL', phone: '073 555 0119' },
+    { name: 'Bongani Nkosi',   vehicle: 'Bajaj Boxer',         plate: 'GP 52 90 MV' }
   ];
 
   const ALL_KEY = 'bizlink_orders_all';
@@ -54,6 +54,15 @@
   const MIGRATED = 'bizlink_orders_migrated';
   const DRV_KEY = 'bizlink_drivers';
   const norm = e => String(e || '').trim().toLowerCase();
+  const routeDate = () => {
+    const now = new Date();
+    return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+  };
+  const routeArea = address => String(address || '').split(',').map(part => part.trim().toLowerCase()).filter(Boolean).slice(-2).join(', ');
+  const routeTown = address => String(address || '').split(',').map(part => part.trim().toLowerCase()).filter(Boolean).slice(-1)[0] || '';
+  const routePoolId = (supplierEmail, address) => [
+    'route', routeDate(), norm(supplierEmail), routeTown(address)
+  ].join('|');
   const read = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
   const write = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
 
@@ -85,13 +94,13 @@
       if (!order.autoPrepare || order.cancelledAt || order.state === 'declined'
         || !['placed', 'accepted', 'preparing'].includes(order.state)) return;
       const elapsed = now - order.placedAt;
-      const next = elapsed >= 15000 ? 'ready' : elapsed >= 10000 ? 'preparing' : elapsed >= 5000 ? 'accepted' : 'placed';
+      const next = elapsed >= 9000 ? 'ready' : elapsed >= 6000 ? 'preparing' : elapsed >= 3000 ? 'accepted' : 'placed';
       const states = ['placed', 'accepted', 'preparing', 'ready'];
       if (states.indexOf(next) > states.indexOf(order.state)) {
         for (let index = states.indexOf(order.state) + 1; index <= states.indexOf(next); index++) {
           const state = states[index];
           order.state = state;
-          order.times[state] = order.placedAt + index * 5000;
+          order.times[state] = order.placedAt + index * 3000;
         }
         changed = true;
       }
@@ -135,6 +144,12 @@
     return [t1, t2, t3, t4];
   }
   function delayOf(order) { return numOf(order) % 3 === 0 ? DELAY : 0; }
+  function poolDiscountRate(shopCount) {
+    if (shopCount >= 4) return 0.30;
+    if (shopCount === 3) return 0.20;
+    if (shopCount === 2) return 0.10;
+    return 0;
+  }
 
   function stageIndex(order, now) {
     const elapsed = (order.cancelledAt || now || Date.now()) - order.placedAt;
@@ -148,14 +163,14 @@
   const tripMs = o => DEMO ? 90e3 : (12 + numOf(o) % 4) * 60e3;     // how long the trip is expected to take
 
   const BizOrders = {
-    DEMO, AUTOPILOT, PAY, STAGES, SUPPORT_PHONE, isAutopilot,
+    DEMO, AUTOPILOT, PAY, STAGES, SUPPORT_PHONE, DELIVERY_FEE_PER_SHOP, isAutopilot,
 
     /**
      * Check out a cart. One order per shop (each shop packs and ships its own),
      * stock is taken, closed shops are refused.
      * user = { name, address, phone }. Returns { orders } or { error }.
      */
-    createMany(email, items, user) {
+    createMany(email, items, user, routePooling) {
       const lines = items.map(i => {
         const p = window.BizProducts && BizProducts.get(i.id);
         return { id: i.id, name: p ? p.name : i.name, price: p ? p.price : Number(i.price), qty: Number(i.qty), shopEmail: p ? p.shopEmail : null, shopName: p ? p.vendor : '' };
@@ -176,10 +191,77 @@
       }
       const groups = {};
       lines.forEach(l => { (groups[l.shopEmail || ''] = groups[l.shopEmail || ''] || []).push(l); });
-      const orders = Object.keys(groups).map(k => this.create(email, groups[k], user, k ? { email: k, name: groups[k][0].shopName } : null, {
-        autoPrepare: !!(user && user.accountType === 'business')
-      }));
-      return { orders };
+      const shopCount = Object.keys(groups).filter(Boolean).length;
+      const poolingEnabled = !!routePooling || !(user && user.accountType === 'business');
+      const discountRate = poolingEnabled ? poolDiscountRate(shopCount) : 0;
+      const deliveryDiscount = Math.round(DELIVERY_FEE_PER_SHOP * discountRate * 100) / 100;
+      const orders = Object.keys(groups).map(k => {
+        const shop = k ? { email: k, name: groups[k][0].shopName } : null;
+        const routePool = routePooling && shop && user && user.accountType === 'business' && user.businessType === 'local-shop'
+          ? {
+            id: routePoolId(shop.email, user.address),
+            date: routeDate(),
+            supplierEmail: norm(shop.email),
+            area: routeArea(user.address),
+            status: 'open'
+          }
+          : null;
+        return this.create(email, groups[k], user, shop, {
+          autoPrepare: !!(user && user.accountType === 'business'),
+          routePool,
+          deliveryFee: shop ? DELIVERY_FEE_PER_SHOP : 0,
+          deliveryDiscount: shop ? deliveryDiscount : 0,
+          poolingShopCount: shop && poolingEnabled ? shopCount : 0
+        });
+      });
+      return {
+        orders,
+        deliveryFee: orders.reduce((sum, order) => sum + order.deliveryFee - order.deliveryDiscount, 0),
+        deliveryDiscount: orders.reduce((sum, order) => sum + order.deliveryDiscount, 0)
+      };
+    },
+
+    /** Nearby businesses can discover an open, same-day route for these suppliers. */
+    routePoolInfo(email, address, items) {
+      const supplierEmails = new Set((items || []).map(item => {
+        const product = window.BizProducts && BizProducts.get(item.id);
+        return product && norm(product.shopEmail);
+      }).filter(Boolean));
+      const today = routeDate();
+      const nearbyBuyers = new Set(loadAll().filter(order =>
+        order.customerEmail !== norm(email)
+        && order.buyerType === 'business'
+        && order.routePool && order.routePool.status === 'open'
+        && order.routePool.date === today
+        && supplierEmails.has(norm(order.routePool.supplierEmail))
+        && !order.cancelledAt && !['cancelled', 'declined', 'delivered'].includes(order.state)
+        && (!window.BizLocation || window.BizLocation.areaRank(address, order.address) <= 1)
+      ).map(order => order.customerEmail));
+      return {
+        nearbyBusinesses: nearbyBuyers.size,
+        date: today,
+        area: routeArea(address),
+        quote: this.deliveryQuote(items, true)
+      };
+    },
+    deliveryQuote(items, pooled) {
+      const shops = new Set((items || []).map(item => {
+        const product = window.BizProducts && BizProducts.get(item.id);
+        return product && norm(product.shopEmail);
+      }).filter(Boolean));
+      const shopCount = shops.size;
+      const rate = pooled ? poolDiscountRate(shopCount) : 0;
+      const standardFee = shopCount * DELIVERY_FEE_PER_SHOP;
+      const deliveryDiscount = Math.round(standardFee * rate * 100) / 100;
+      const subtotal = (items || []).reduce((sum, item) => sum + Number(item.price) * Number(item.qty), 0);
+      return {
+        shopCount,
+        discountPercent: rate * 100,
+        standardFee,
+        deliveryDiscount,
+        deliveryFee: standardFee - deliveryDiscount,
+        total: subtotal + standardFee - deliveryDiscount
+      };
     },
 
     /** Create one order for one shop (stock already taken). */
@@ -203,11 +285,18 @@
         shopAddress: seller && seller.address || '',
         items: clean,
         total: clean.reduce((s, i) => s + i.price * i.qty, 0),
+        deliveryFee: Number(options && options.deliveryFee) || 0,
+        deliveryDiscount: Number(options && options.deliveryDiscount) || 0,
+        poolingShopCount: Number(options && options.poolingShopCount) || 0,
+        amountDue: clean.reduce((s, i) => s + i.price * i.qty, 0)
+          + (Number(options && options.deliveryFee) || 0)
+          - (Number(options && options.deliveryDiscount) || 0),
         address: (user && user.address) || '',
         dropArea: parts[1] || parts[0] || '',
         phone: (user && user.phone) || '',
         km: Math.round(km * 10) / 10,
         payout: options && options.isDemo ? 0 : Math.round(PAY.base + km * PAY.perKm),
+        routePool: options && options.routePool || null,
         state: 'placed',
         driverEmail: null,
         times: { placed: now },
@@ -331,7 +420,7 @@
 
     isLate(order, now) {
       const s = this.status(order, now);
-      return s.active && (now || Date.now()) > this.etaTime(order);
+      return !DEMO && s.active && (now || Date.now()) > this.etaTime(order);
     },
 
     /** Driver progress along the route (0–1), minutes left and km left. */

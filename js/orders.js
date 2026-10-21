@@ -128,10 +128,11 @@
           </div>
           <div class="od-items">${esc(summary(o))}</div>
           ${isLocalShop && o.shopName ? `<div class="od-vendor">Supplier: ${esc(o.shopName)}</div>` : ''}
+          ${isLocalShop && o.routePool ? '<div class="od-vendor">Shared supplier route · delivery may be pooled with nearby businesses</div>' : ''}
           ${bar}
           <div class="od-bottom">
             <span>${itemCount(o)} ${itemCount(o) === 1 ? 'item' : 'items'}${hint}</span>
-            <b>${money(o.total)}</b>
+            <b>${money(o.amountDue != null ? o.amountDue : o.total)}</b>
           </div>
         </button>`;
     }).join('');
@@ -227,6 +228,11 @@
     else if (s.cancelled) eta = `<div class="od-eta cancelled">This order was cancelled and you were not charged.</div>`;
 
     const lines = o.items.map(i => `<div class="od-line"><span>${i.qty} × ${esc(i.name)}</span><span>${money(i.price * i.qty)}</span></div>`).join('');
+    const deliveryLines = o.deliveryFee != null
+      ? `<div class="od-line"><span>Product subtotal</span><span>${money(o.total)}</span></div>
+        <div class="od-line"><span>Delivery</span><span>${money(o.deliveryFee)}</span></div>
+        ${o.deliveryDiscount ? `<div class="od-line"><span>Pooling discount${o.poolingShopCount ? ' · ' + o.poolingShopCount + ' shops' : ''}</span><span>−${money(o.deliveryDiscount)}</span></div>` : ''}`
+      : '';
 
     let actions = '';
     if (BizOrders.canCancel(o)) {
@@ -239,7 +245,7 @@
       <div class="od-sheet-top"><span class="od-date">Placed ${dateLabel(o.placedAt)}</span><span class="od-pill ${s.key}">${s.label}</span></div>
       ${eta}${liveBlock(o, s)}${driverCard(o, s)}
       <ol class="od-timeline">${steps}</ol>
-      <div class="od-block"><h3>Items</h3>${lines}<div class="od-line total"><span>Total</span><span>${money(o.total)}</span></div></div>
+      <div class="od-block"><h3>Items</h3>${lines}${deliveryLines}<div class="od-line total"><span>Total</span><span>${money(o.amountDue != null ? o.amountDue : o.total)}</span></div></div>
       <div class="od-block"><h3>Delivery address</h3>
         <div class="od-addr">${o.address ? esc(o.address) : 'No address saved'}${o.phone ? '<small>' + esc(o.phone) + '</small>' : ''}</div></div>
       ${helpBlock(o, s)}
